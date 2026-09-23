@@ -35,7 +35,8 @@ Der **Verainfacher** ist eine barrierefreie Web-Anwendung, die Menschen mit eing
 |---|---|
 | Frontend-Framework | [SvelteKit](https://kit.svelte.dev/) 2.x mit Svelte 5 (Runes Mode) |
 | Sprache | TypeScript |
-| Styling | Tailwind CSS 4 |
+| Styling | Tailwind CSS 4, Tokens in `layout.css` (`@theme`) |
+| Schriften und Symbole | Inter, Plus Jakarta Sans, Material Symbols Rounded – lokal über npm (`@fontsource-variable/*`, `material-symbols`) |
 | Animationen | GSAP 3 |
 | Build-Tool | Vite 8 |
 | Server/Adapter | `@sveltejs/adapter-node` (Node.js) |
@@ -83,23 +84,28 @@ vairbildlicher-google-web/
 │       └── ui/
 │           ├── modules/               # Haupt-UI-Komponenten (Svelte)
 │           │   ├── ChatFlow.svelte         # Chat-Verlauf & Nachrichten-Anzeige
-│           │   ├── ChatHeader.svelte       # App-Header mit Navigation & Aktionen
+│           │   ├── ChatHeader.svelte       # Punkte-Leiste im Chat (unter AppHeader)
 │           │   ├── MultiPhotoCapture.svelte # Multi-Bild-Kamera-Aufnahme
 │           │   ├── SelectImageFiles.svelte  # Datei-Upload & Kamera-Trigger
 │           │   ├── InitialImageUpload.svelte # Erste-Bild-Upload-Ansicht
-│           │   ├── Infopage.svelte          # Startseite mit Anleitung
+│           │   ├── AppHeader.svelte         # Globale Kopfzeile: Logo + Barrierefreiheitsmenü (alle Ansichten)
+│           │   ├── LandingPage.svelte       # Startseite nach Figma-Mockup „A11y_Designs“
+│           │   ├── Infopage.svelte          # alte Startseite (nur noch im Upload-Sonderfall)
 │           │   ├── ChallengeOverlay.svelte  # Multiple-Choice-Quiz-Overlay
 │           │   ├── CoinCollectionOverlay.svelte # Belohnungs-Animation
-│           │   ├── AIWarningModal.svelte    # KI-Hinweis-Dialog (beim ersten Besuch)
+│           │   ├── AIWarningPage.svelte     # KI-Hinweis als eigene Seite (bei jedem Besuch zuerst)
 │           │   ├── DesktopCamera.svelte     # Desktop-Webcam-Unterstützung
 │           │   ├── Gallery.svelte           # Bild-Galerie-Ansicht
 │           │   └── UserChatBar.svelte       # Eingabeleiste für Nutzer-Fragen
+│           ├── a11y-settings.svelte.ts # Schriftgröße und Kontrast (Kopfzeile), im Browser gespeichert
 │           ├── common/                # Wiederverwendbare UI-Bausteine
 │           └── assets/                # Bilder, Icons etc.
 ├── static/                            # Statische Assets
 │   ├── favicon.ico / favicon.png
 │   ├── apple-touch-icon.png
 │   ├── KHuF logo.png                  # KOPF, HAND + FUSS Logo
+│   ├── images/verainfacher-logo.svg   # Logo mit Wortmarke (Quelle: ../Inputs/)
+│   ├── images/landing/                # Bilder der 3 Schritte (mit Gemini erzeugt)
 │   └── robots.txt
 ├── local-files/                       # Lokale Konfigurationsdateien (nicht im Build)
 │   └── system-prompts/                # KI-System-Prompts als .txt-Dateien
@@ -110,6 +116,7 @@ vairbildlicher-google-web/
 │       └── ChallengeSystemPrompt.txt
 ├── docs/                              # Analysen & Testbefunde der Technikprobe
 │   ├── ANALYSE-2026-09-23.md
+│   ├── DESIGN-UMSETZUNG.md            # Umsetzung des Mockups + Korrekturliste
 │   └── befunde/                       # Testbilder
 ├── .env                               # Lokale Umgebungsvariablen (nicht committen!)
 ├── .env.example                       # Vorlage für Umgebungsvariablen
@@ -131,7 +138,7 @@ Nutzer:in
    ▼
 +page.svelte  (State Machine)
    │
-   ├─ [initial]  ──► Infopage + MultiPhotoCapture
+   ├─ [initial]  ──► LandingPage (+ MultiPhotoCapture eingebettet)
    │                      │ Foto(s) aufgenommen
    │                      ▼
    ├─ [chatFlow] ──► ChatFlow.svelte

@@ -13,7 +13,7 @@
 	
 	<div class="mx-auto max-w-2xl text-center mb-4 sm:mb-6">
 		<div class="flex items-center justify-center gap-3 sm:gap-4">
-			<h1 class="text-2xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-gray-900">Verbildlicher</h1>
+			<h1 class="text-2xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-gray-900">Verainfacher</h1>
 		</div>
 	</div>
 

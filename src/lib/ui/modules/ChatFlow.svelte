@@ -121,7 +121,7 @@
 			
 			// Calculate position relative to the container
 			const relativeTop = elementRect.top - containerRect.top
-			const headerHeight = 60 // Header is 60px on both mobile and desktop
+			const headerHeight = 0 // Headers sit above the scroll container, not over it
 			const additionalOffset = 10 // Small additional offset for better visual spacing
 			
 			// Calculate scroll position
@@ -139,7 +139,7 @@
 			
 			const relativeTop = elementRect.top - containerRect.top
 			const isMobile = window.innerWidth < 768
-			const headerHeight = 60
+			const headerHeight = 0
 			const additionalOffset = isMobile ? 20 : 10 // More offset on mobile for center-like behavior
 			
 			const scrollPosition = scrollContainer.scrollTop + relativeTop - headerHeight - additionalOffset

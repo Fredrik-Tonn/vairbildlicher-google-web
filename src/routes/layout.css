@@ -1,5 +1,78 @@
 @import 'tailwindcss';
 
+/* Design tokens from the Figma mockup "A11y_Designs" (values estimated from screenshots) */
+@theme {
+    --font-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+    --font-display: 'Plus Jakarta Sans Variable', 'Inter Variable', ui-sans-serif, sans-serif;
+
+    --color-brand: #0047cc;
+    --color-brand-hover: #003aa8;
+    --color-ink: #111827;
+    --color-ink-soft: #4b5563;
+    --color-page: #f6f7fb;
+    --color-page-tint: #eaf0fb;
+    --color-surface: #ffffff;
+    --color-muted: #f1f2f5;
+    --color-muted-strong: #e4e6eb;
+    --color-chip: #e8eaee;
+    --color-line: #e6e8ec;
+    --color-tint: #dce7fb;
+    --color-mint: #b3efdd;
+    --color-eyebrow: #3d5a80;
+    --color-icon: #1d3b75;
+    /* Border of secondary controls: ≥ 3.9:1 against white, #f1f2f5 and #e4e6eb (WCAG 1.4.11) */
+    --color-control-line: #6b7280;
+
+    /* Schritt-Farben: Helligkeits-Stufung hell → mittel → dunkel zeigt die Reihenfolge 1, 2, 3
+       (auch bei Farbfehlsichtigkeit und in Graustufen). Abstand 1↔2 2,7:1, 2↔3 3,6:1 */
+    --color-step-1: #dce7fb;
+    --color-step-1-ink: #111827; /* 14,3:1 */
+    --color-step-2: #5b8ae6;
+    --color-step-2-ink: #0b1220; /* 5,6:1 */
+    --color-step-3: #0b2f80;
+    --color-step-3-ink: #ffffff; /* 12,1:1 */
+}
+
+/* Kontrast-Modus (Knopf in der Kopfzeile): schwarz auf weiß, klare Kanten */
+html[data-contrast='high'] {
+    --color-brand: #000000;
+    --color-brand-hover: #000000;
+    --color-ink: #000000;
+    --color-ink-soft: #000000;
+    --color-page: #ffffff;
+    --color-page-tint: #ffffff;
+    --color-surface: #ffffff;
+    --color-muted: #ffffff;
+    --color-muted-strong: #ffffff;
+    --color-chip: #ffffff;
+    --color-line: #000000;
+    --color-tint: #ffffff;
+    --color-mint: #ffffff;
+    --color-eyebrow: #000000;
+    --color-icon: #000000;
+    --color-control-line: #000000;
+    --color-step-1: #ffffff;
+    --color-step-1-ink: #000000;
+    --color-step-2: #ffffff;
+    --color-step-2-ink: #000000;
+    --color-step-3: #000000;
+    --color-step-3-ink: #ffffff;
+}
+
+html[data-contrast='high'] .hc-outline {
+    outline: 2px solid #000;
+    outline-offset: -2px;
+}
+
+/* Schriftgrößen-Stufen (Knopf in der Kopfzeile); Tailwind rechnet in rem */
+html[data-textsize='1'] {
+    font-size: 112.5%;
+}
+
+html[data-textsize='2'] {
+    font-size: 125%;
+}
+
 /* Native app-like layout - no body scrolling */
 html, body {
     overflow: hidden; /* Prevent any body scrolling */
@@ -166,8 +239,13 @@ body {
 }
 
 /* Force all other fixed elements to be below the challenge */
-.fixed:not(.challenge-modal-active):not(.coin-animation-layer) {
+.fixed:not(.challenge-modal-active):not(.coin-animation-layer):not(.layer-overlay) {
     z-index: 10 !important;
+}
+
+/* Full-screen overlays of the landing page (camera, drop zone) must sit above the capped fixed elements */
+.layer-overlay {
+    z-index: 60 !important;
 }
 
 /* Ensure challenge content is properly positioned */

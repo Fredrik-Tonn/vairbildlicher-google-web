@@ -142,10 +142,9 @@
 		background: white;
 		border-bottom: 1px solid #e5e7eb;
 		height: 60px;
-		position: fixed;
-		top: 0;
-		left: 0;
-		right: 0;
+		/* In the page flow below the global AppHeader (was position: fixed) */
+		position: relative;
+		flex-shrink: 0;
 		z-index: 40;
 		box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
 	}

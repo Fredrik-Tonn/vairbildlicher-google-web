@@ -151,7 +151,7 @@
 	{#if message.user === chatbotName}
 		<ChatBubbleBottomCenterTextMicro></ChatBubbleBottomCenterTextMicro>
 	{/if}
-	<div class="flex flex-col gap-1 w-full max-w-[360px] sm:max-w-[420px]">
+	<div class="flex flex-col gap-1 w-full max-w-full sm:max-w-xl lg:max-w-2xl">
 		<div class="flex items-center space-x-2 rtl:space-x-reverse {alignRight}">
 			<span class="text-xs font-semibold text-gray-900">{message.user}</span>
 			<span class="text-xs font-normal text-gray-900">{messageTimeFormatted}</span>

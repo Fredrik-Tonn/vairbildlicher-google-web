@@ -6,10 +6,12 @@
 	import QuestionMarkCircle from '$lib/ui/assets/QuestionMarkCircle.svelte'
 	import HelpLink from '$lib/ui/common/HelpLink.svelte'
 
-	let { onPhotosComplete, onCancel, showMenu = false }: {
+	let { onPhotosComplete, onCancel, showMenu = false, embedded = false }: {
 		onPhotosComplete: (images: ImageInfo[]) => void,
 		onCancel: () => void,
-		showMenu?: boolean
+		showMenu?: boolean,
+		// embedded: the landing page renders its own buttons and calls the exported functions
+		embedded?: boolean
 	} = $props()
 
 	// State for the 5 photo slots
@@ -66,6 +68,11 @@
 			showCamera = true
 		}
 	}
+
+	// Entry points for the landing page (embedded mode)
+	export const takePhoto = () => handleCameraClick()
+	export const uploadFiles = () => handleUploadClick()
+	export const addFiles = (files: FileList) => processFiles(files)
 
 	// Handle photo capture from camera
 	const handlePhotoCapture = (dataURL: string) => {
@@ -184,8 +191,21 @@
 </script>
 
 {#if showCamera}
-	<DesktopCamera onPhotoCapture={handlePhotoCapture} onCancel={handleCameraCancel} />
-{:else}
+	<!-- Desktop camera as full-screen overlay (mockup frame 1: tip on black) -->
+	<div class="fixed inset-0 layer-overlay bg-black overflow-y-auto" role="dialog" aria-modal="true" aria-label="Kamera">
+		<DesktopCamera onPhotoCapture={handlePhotoCapture} onCancel={handleCameraCancel} />
+		<p class="mx-auto max-w-sm px-6 pb-10 text-center text-lg leading-relaxed text-[#f4f4f5]">
+			Tipp: Halten Sie die Kamera gerade über den Text.
+		</p>
+	</div>
+{/if}
+{#if embedded}
+	{#if hasPhotos}
+		<div class="w-full" transition:fly={{ y: 20, duration: 300 }}>
+			{@render photoSlotList()}
+		</div>
+	{/if}
+{:else if !showCamera}
 	<div class="flex flex-col items-center justify-center w-full h-full overflow-y-auto py-2 relative">
 		<!-- Menu Button - top right corner (only when standalone) -->
 		{#if showMenu}
@@ -205,13 +225,13 @@
 					Machen Sie ein Foto von dem Text.
 				</p>
 				<p class="text-base sm:text-lg text-gray-700 leading-relaxed">
-					Der Verbildlicher hilft beim Verstehen.
+					Der Verainfacher hilft beim Verstehen.
 				</p>
 				<p class="text-base sm:text-lg text-gray-700 leading-relaxed">
 					Sie wollen ein Foto machen?
 				</p>
 				<p class="text-base sm:text-lg text-gray-700 leading-relaxed">
-					Dann drücken Sie den blauen Knopf mit dem Kamera-Bild.
+					Dann drücken Sie den Knopf mit dem Kamera-Bild.
 				</p>
 			</div>
 			{/if}
@@ -250,81 +270,87 @@
 		<!-- Photo slots - only show after first image -->
 		{#if hasPhotos}
 			<div class="w-full px-4 mt-4 sm:mt-8 lg:mt-12 pb-4 sm:pb-6" transition:fly={{ y: 20, duration: 300 }}>
-				<div class="flex justify-center gap-4 mb-6">
-					{#each photoSlots as slot, index}
-						{#if slot}
-							<!-- Filled slot with image preview -->
-							<button
-								onclick={() => handleSlotClick(index)}
-								class="relative w-16 h-16 rounded-lg border-2 border-green-300 hover:border-green-400 focus:outline-none focus:ring-2 focus:ring-green-500 transition-all"
-								aria-label={`Foto ${index + 1} löschen`}
-							>
-								<!-- Image preview -->
-								<img 
-									src={slot.src} 
-									alt={`Foto ${index + 1}`}
-									class="w-full h-full object-cover rounded-md"
-								/>
-								
-								<!-- Trash overlay - proper CSS transparency, always visible -->
-								<div class="absolute inset-0 flex items-center justify-center rounded-md z-10" style="background-color: rgba(0, 0, 0, 0.3);">
-									<TrashSolid class="size-6 text-white" />
-								</div>
-								
-								<!-- Small badge with checkmark (top right) - above overlay -->
-								<div class="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full flex items-center justify-center z-20">
-									<svg class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
-									</svg>
-								</div>
-							</button>
-						{:else}
-							<!-- Empty slot (no click handler) -->
-							<div class="w-16 h-16 rounded-lg border-2 border-gray-300 flex items-center justify-center bg-gray-50">
-								<PhotoSolid class="size-6 text-gray-400" />
-							</div>
-						{/if}
-					{/each}
-				</div>
-
-				<!-- Action buttons -->
-				<div class="flex gap-4 max-w-md mx-auto">
-					<button
-						onclick={handleCancel}
-						class="flex-1 py-3 px-6 bg-white text-gray-700 border border-gray-300 rounded-full hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-all"
-					>
-						Abbrechen
-					</button>
-					<button
-						onclick={handleExplain}
-						class="flex-1 py-3 px-6 bg-blue-600 text-white rounded-full hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
-					>
-						Erklären
-					</button>
-				</div>
+				{@render photoSlotList()}
 			</div>
 		{/if}
-		
-		<!-- Hidden file input for uploading multiple files -->
-		<input 
-			type="file" 
-			bind:this={fileInputElement}
-			onchange={handleFileSelection}
-			accept="image/png, image/jpeg, image/jpg, image/gif, image/webp"
-			multiple
-			class="hidden"
-			aria-hidden="true"
-		/>
-		
-		<!-- Hidden camera input for mobile camera capture -->
-		<input 
-			type="file" 
-			bind:this={cameraInputElement}
-			onchange={handleCameraSelection}
-			accept="image/png, image/jpeg"
-			capture="environment"
-			class="hidden"
-			aria-hidden="true"
-		/>
+
 	</div>
 {/if}
+
+<!-- Hidden inputs, needed in both modes -->
+<!-- Hidden file input for uploading multiple files -->
+<input 
+	type="file" 
+	bind:this={fileInputElement}
+	onchange={handleFileSelection}
+	accept="image/png, image/jpeg, image/jpg, image/gif, image/webp"
+	multiple
+	class="hidden"
+	aria-hidden="true"
+/>
+
+<!-- Hidden camera input for mobile camera capture -->
+<input 
+	type="file" 
+	bind:this={cameraInputElement}
+	onchange={handleCameraSelection}
+	accept="image/png, image/jpeg"
+	capture="environment"
+	class="hidden"
+	aria-hidden="true"
+/>
+
+{#snippet photoSlotList()}
+	<div class="flex justify-center gap-4 mb-6">
+		{#each photoSlots as slot, index}
+			{#if slot}
+				<!-- Filled slot with image preview -->
+				<button
+					onclick={() => handleSlotClick(index)}
+					class="relative w-16 h-16 rounded-lg border-2 border-green-300 hover:border-green-400 focus:outline-none focus:ring-2 focus:ring-green-500 transition-all"
+					aria-label={`Foto ${index + 1} löschen`}
+				>
+					<!-- Image preview -->
+					<img 
+						src={slot.src} 
+						alt={`Foto ${index + 1}`}
+						class="w-full h-full object-cover rounded-md"
+					/>
+					
+					<!-- Trash overlay - proper CSS transparency, always visible -->
+					<div class="absolute inset-0 flex items-center justify-center rounded-md z-10" style="background-color: rgba(0, 0, 0, 0.3);">
+						<TrashSolid class="size-6 text-white" />
+					</div>
+					
+					<!-- Small badge with checkmark (top right) - above overlay -->
+					<div class="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full flex items-center justify-center z-20">
+						<svg class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+						</svg>
+					</div>
+				</button>
+			{:else}
+				<!-- Empty slot (no click handler) -->
+				<div class="w-16 h-16 rounded-lg border-2 border-gray-300 flex items-center justify-center bg-gray-50">
+					<PhotoSolid class="size-6 text-gray-400" />
+				</div>
+			{/if}
+		{/each}
+	</div>
+
+	<!-- Action buttons -->
+	<div class="flex gap-4 max-w-md mx-auto">
+		<button
+			onclick={handleCancel}
+			class="flex-1 py-3 px-6 bg-white text-gray-800 border-2 border-control-line rounded-full hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-all"
+		>
+			Abbrechen
+		</button>
+		<button
+			onclick={handleExplain}
+			class="flex-1 py-3 px-6 bg-blue-600 text-white rounded-full hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+		>
+			Erklären
+		</button>
+	</div>
+{/snippet}
