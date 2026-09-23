@@ -18,6 +18,35 @@
 >   Deshalb läuft die Sprachausgabe jetzt über Gemini TTS.
 > - Der aktuelle Bild-Prompt erzeugt trotz Verbot Schrift, falsche Daten und logoähnliche Elemente.
 >   Das ist noch offen.
+>
+> **Design:** Die Oberfläche folgt dem Figma-Prototyp „A11y_Designs“ und wird Schritt für Schritt korrigiert.
+> Details und Korrekturliste: [docs/DESIGN-UMSETZUNG.md](docs/DESIGN-UMSETZUNG.md)
+
+---
+
+## Stand (23.09.2026)
+
+| Branch | Stand |
+|---|---|
+| `main` | `b7b3b1a`: initiales Projekt-Setup, unverändert |
+| `dev` | `afe3fc8` Analyse und Doku, `87fc2cb` Befunde behoben, `361bc34` Startseite nach Mockup, globale Kopfzeile und responsives Layout. Noch nicht in `main` übernommen. |
+
+**Fertig:**
+
+- Gemini für Text, Bild und Sprache.
+- Fotos werden vor dem Upload verkleinert.
+- Typ-Prüfung ohne Fehler.
+- Neue Startseite, globale Kopfzeile mit Logo und Barrierefreiheitsmenü.
+- KI-Hinweis als eigene Seite.
+- Volle Responsivität (mobile first).
+
+**Offen:**
+
+- Bildfunktion, der Kern der Technikprobe (geplant ab 24.09.2026):
+  - Bild-Prompt mit Bildregeln.
+  - Bild automatisch nach der Antwort.
+  - Bild pro Satz.
+- Offene Punkte der Korrekturliste in `docs/DESIGN-UMSETZUNG.md`.
 
 ---
 
@@ -138,10 +167,14 @@ Nutzer:in
    ▼
 +page.svelte  (State Machine)
    │
+   ├─ immer oben ──► AppHeader (Logo + Barrierefreiheitsmenü)
+   │
+   ├─ [zuerst]   ──► AIWarningPage (KI-Hinweis, „OK“)
+   │
    ├─ [initial]  ──► LandingPage (+ MultiPhotoCapture eingebettet)
    │                      │ Foto(s) aufgenommen
    │                      ▼
-   ├─ [chatFlow] ──► ChatFlow.svelte
+   ├─ [chatFlow] ──► ChatHeader (Punkte-Leiste) + ChatFlow.svelte
    │                      │ Bild(er) als Base64
    │                      ▼
    │               POST /api/chat
@@ -163,7 +196,7 @@ Nutzer:in
    │               ▼             ▼
    │         /api/tts        /api/visualize
    │         Sprachausgabe   Bild-Illustration
-   │         (Google TTS)    (gemini-3.1-flash-image)
+   │         (Gemini TTS)    (gemini-3.1-flash-image)
    │
    └─ [Challenge] ──► ChallengeOverlay.svelte
                        Multiple-Choice-Quiz
@@ -180,13 +213,15 @@ Nutzer:in
 | `gemini-3.8-flash-tts` | Sprachausgabe (Stimme „Kore“, WAV) |
 | `gemini-3.1-flash-image` | Verbildlichung: ein Bild pro KI-Antwort auf Knopfdruck (Gemini-Bildmodell, nicht Imagen) |
 
-Beide Modelle sind am 23.09.2026 mit dem Hackathon-Schlüssel per `models.list` bestätigt.
+Alle drei Modelle sind am 23.09.2026 mit dem Hackathon-Schlüssel per `models.list` bestätigt.
 Der Bild-Prompt steht fest im Code (`generateSentenceIllustration` in `gemini.service.ts`).
 Er ist nicht als `.txt` ausgelagert.
 
 ### System-Prompts
 
-Die KI-Anweisungen sind als externe `.txt`-Dateien im Ordner `local-files/system-prompts/` abgelegt und werden beim Start in Redis gecacht. So können Prompts ohne Code-Deployment angepasst werden.
+Die KI-Anweisungen liegen als `.txt`-Dateien in `local-files/system-prompts/`.
+Der Server cacht sie 5 Minuten lang, in Redis oder im Speicher.
+So lassen sich die Prompts ohne neues Deployment anpassen.
 
 | Prompt | Zweck |
 |---|---|
@@ -305,16 +340,29 @@ Alternativ gibt `PROMPTS_DIR` den Ordner vor.
 
 ## Barrierefreiheit (A11y)
 
-- Texte in **Leichter und Einfacher Sprache** (Zielgruppe: Menschen mit kognitiven Beeinträchtigungen)
-- **ARIA-Attribute** auf allen interaktiven Elementen
-- **Tastaturnavigation** vollständig unterstützt
-- **Sichtbare Fokus-Ringe** für Tastaturnutzer:innen
+- **Sprache:** Easy Language Plus, eine Variante der Einfachen Sprache.
+  Auf der Oberfläche steht jeder Satz in einer eigenen Zeile.
+- **Barrierefreiheitsmenü** in der globalen Kopfzeile (`AppHeader.svelte`) mit sichtbarer Beschriftung:
+  - **Schrift:** 3 Stufen (100 %, 112,5 %, 125 %).
+  - **Kontrast:** schwarz auf weiß.
+  - **Vorlesen:** liest den Text der aktuellen Ansicht.
+  - Schrift und Kontrast bleiben im Browser gespeichert (`a11y-settings.svelte.ts`).
 - **Sprachausgabe** über Gemini TTS (`gemini-3.8-flash-tts`, Stimme „Kore“, WAV).
   Mit gesetztem `GOOGLE_TTS_API_KEY` läuft sie stattdessen über Google Cloud TTS (`de-DE-Neural2-B`, MP3, etwas langsamer).
   Gemini TTS erhält nur den reinen Text.
   Stil-Anweisungen wie „Lies langsam vor:“ liest das Modell mit vor (getestet 23.09.2026).
-- **Großes, klares Interface** mit hohem Kontrast
-- Mobile-First-Design, optimiert für Smartphone-Nutzung
+- **Umgesetzte WCAG-Punkte:**
+  - 1.3.3: Knöpfe werden über ihre Beschriftung beschrieben, nicht über die Farbe.
+  - 2.5.3: Der Name für Screenreader ist gleich der sichtbaren Beschriftung.
+  - 1.4.3: Der Kamera-Tipp hat 19:1 Kontrast.
+  - 1.4.11: Sekundäre Knöpfe haben einen Rand mit mindestens 3,9:1.
+  - Die Reihenfolge der Schritte ist als Helligkeits-Stufung umgesetzt.
+  - Alle Werte sind nachgerechnet, nicht geschätzt.
+- **Semantik:** Die Kopfzeile ist ein Seitenkopf (banner), und jede Ansicht hat genau ein `<main>`.
+- **Mobile first, voll responsiv:** Die Inhaltsbreite reicht auf dem Handy über den ganzen Bildschirm, auf großen Bildschirmen bis 1280 px.
+  Raster greifen ab 768 px bzw. 1280 px.
+  Das fehlende `<meta name="viewport">` ist ergänzt.
+- **Offene Punkte:** siehe Korrekturliste in `docs/DESIGN-UMSETZUNG.md`.
 
 ---
 
@@ -326,5 +374,18 @@ Alternativ gibt `PROMPTS_DIR` den Ordner vor.
 - **Typen bei `$state`:** `$state<T | null>(null)` schreiben, nicht `let x: T | null = $state(null)`.
   Sonst leitet TypeScript nur `null` ab.
 - **Fotos:** `ChatFlow.svelte` verkleinert Fotos vor dem Senden über `src/lib/shared/image.client.ts` (max. 2048 px, JPEG 85 %).
+- **Vorlesen anmelden:** Jede Ansicht meldet ihren Text mit `setReadAloudSource(() => text)` an (`a11y-settings.svelte.ts`).
+  Die Funktion gibt eine Abmeldung zurück, die beim Verlassen der Ansicht aufgerufen wird.
+- **Fixierte Overlays und `z-index`:** `layout.css` deckelt jedes `.fixed`-Element auf `z-index: 10`.
+  Vollbild-Overlays brauchen die Klasse `layer-overlay`.
+  Die Kopfzeilen im Fluss nutzen `z-[5]`.
+- **Design-Tokens:** Farben und Schriften stehen in `layout.css` (`@theme`).
+  Der Kontrast-Modus überschreibt dieselben Variablen.
+  Neue Farben deshalb als Token anlegen und dort auch den Wert für den Kontrast-Modus setzen.
+- **Texte in EL+:** Schritt-Texte der Startseite sind Zeilen-Listen (`lines`), ein Satz pro Zeile.
+- **Knöpfe mit Symbol und Beschriftung:** Die Material-Symbols-Spans bekommen `aria-hidden="true"`.
+  `aria-label` wiederholt genau die sichtbare Beschriftung.
+- **Lokale Vorschau in Claude Code:** Eintrag `vairbildlicher-dev` in `Projects/.claude/launch.json`, Port 5181.
+  Port 5173 belegt einfachfuturium-web.
 - **Neue API-Endpunkte:** Im Ordner `src/routes/api/<endpunkt>/+server.ts` anlegen (SvelteKit-Konvention).
 - **Kein globaler State-Manager:** Der App-State wird über Svelte Context (`setContext`/`getContext`) und Rune-State verwaltet.
