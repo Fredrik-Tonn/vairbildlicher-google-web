@@ -18,6 +18,7 @@
 	import type { HttpError } from '@sveltejs/kit'
 	import { rewardManager } from '$lib/shared/rewardSystem'
 	import type { Challenge } from '$lib/shared/domain/verainfacher.model'
+	import { downscaleImage } from '$lib/shared/image.client'
 	import ChallengeButton from '$lib/ui/common/ChallengeButton.svelte'
 	import UserChatBar from './UserChatBar.svelte'
 
@@ -60,10 +61,14 @@
 		appState.words = []
 		appState.availableChallenge = null
 
-		await new Promise((resolve) => setTimeout(resolve, waitToSendMessage))
+		// Downscale photos while the short send delay runs
+		const [uploadImages] = await Promise.all([
+			Promise.all(images.map(downscaleImage)),
+			new Promise((resolve) => setTimeout(resolve, waitToSendMessage))
+		])
 		addVAIRChatMessage()
 		try {
-			const vairResponse = await postFetch('/api/chat', { prompt, images, chatId: appState.chatId })
+			const vairResponse = await postFetch('/api/chat', { prompt, images: uploadImages, chatId: appState.chatId })
 			if (vairResponse) {
 				appState.completion = vairResponse.result.completion
 				appState.completion_items = vairResponse.result.completion_items

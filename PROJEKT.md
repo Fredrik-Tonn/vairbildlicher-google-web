@@ -2,7 +2,7 @@
 
 > **Träger:** KOPF, HAND + FUSS gGmbH  
 > **Repository:** [KopfHandundFuss/vairbildlicher-google-web](https://github.com/KopfHandundFuss/vairbildlicher-google-web)  
-> **Produktiv-URLs:** keine eigenen. Die Verainfacher-Domains in `svelte.config.js` stammen aus der Ausgangscodebasis.
+> **Produktiv-URLs:** keine (Technikprobe, nur lokal).
 
 > [!IMPORTANT]
 > **Status: Hackathon-Technikprobe (Google × Aktion Mensch)**
@@ -15,7 +15,9 @@
 > - Text: ca. 6,5 s.
 > - Bild: ca. 10–11 s.
 > - Cloud TTS ist für den Hackathon-Schlüssel gesperrt (HTTP 403).
+>   Deshalb läuft die Sprachausgabe jetzt über Gemini TTS.
 > - Der aktuelle Bild-Prompt erzeugt trotz Verbot Schrift, falsche Daten und logoähnliche Elemente.
+>   Das ist noch offen.
 
 ---
 
@@ -38,7 +40,7 @@ Der **Verainfacher** ist eine barrierefreie Web-Anwendung, die Menschen mit eing
 | Build-Tool | Vite 8 |
 | Server/Adapter | `@sveltejs/adapter-node` (Node.js) |
 | KI / Multimodal | Google Gemini API via `@google/genai` SDK |
-| Text-to-Speech | Google Cloud TTS (`@google-cloud/text-to-speech`) |
+| Text-to-Speech | Gemini TTS (`gemini-3.8-flash-tts`); optional Google Cloud TTS über REST |
 | Session-Cache | Redis (Fallback: In-Memory) |
 | Markdown-Rendering | `marked` + `dompurify` (XSS-Schutz) |
 | Linting / Formatting | ESLint 10 + Prettier 3 |
@@ -58,28 +60,26 @@ vairbildlicher-google-web/
 │   │   ├── layout.css                 # Globale Basis-Styles
 │   │   └── api/                       # API-Endpunkte (SvelteKit server routes)
 │   │       ├── chat/                  # POST /api/chat → Gemini Textvereinfachung
-│   │       ├── tts/                   # POST /api/tts → Google Text-to-Speech
+│   │       ├── tts/                   # POST /api/tts → Gemini TTS (optional Cloud TTS)
 │   │       ├── difficult-words/       # POST /api/difficult-words → Worterklärungen
 │   │       ├── followup-questions/    # POST /api/followup-questions → Folgefragen
 │   │       ├── multiple-choice-challenge/ # POST /api/multiple-choice-challenge
-│   │       ├── visualize/             # POST /api/visualize → Bild-Illustration (gemini-3.1-flash-image)
-│   │       └── getfile/               # GET /api/getfile → lokale Datei-Auslieferung
+│   │       └── visualize/             # POST /api/visualize → Bild-Illustration (gemini-3.1-flash-image)
 │   └── lib/
 │       ├── server/
 │       │   ├── services/
-│       │   │   ├── gemini.service.ts  # Gesamte Gemini-KI-Logik (Chat, TTS, Bilder, Challenge)
-│       │   │   ├── google-tts.service.ts # Google Cloud TTS Integration
-│       │   │   ├── redis.adapter.ts   # Redis-Client mit In-Memory-Fallback
-│       │   │   ├── chat.service.ts    # Chat-Koordination
-│       │   │   └── polly.service.ts   # leer (Überbleibsel aus der Verainfacher-Codebasis)
-│       │   └── db/                    # Datenbank-Helfer
+│       │   │   ├── gemini.service.ts  # Gemini-KI-Logik (Chat, Bilder, Wörter, Folgefragen, Challenge)
+│       │   │   ├── google-tts.service.ts # Sprachausgabe: Gemini TTS, optional Cloud TTS
+│       │   │   └── redis.adapter.ts   # Redis-Client mit In-Memory-Fallback
+│       │   └── index.ts               # Sammel-Export der Server-Services
 │       ├── shared/
 │       │   ├── domain/                # TypeScript-Typen & Domain-Modelle
 │       │   ├── rewardSystem.ts        # Punkte-/Belohnungssystem (Coins, Level)
 │       │   ├── audioCache.ts          # Client-seitiger Audio-Cache
 │       │   ├── const.client.ts        # Client-Konstanten
 │       │   ├── const.server.ts        # Server-Konstanten
-│       │   └── helper.ts              # Utility-Funktionen
+│       │   ├── helper.ts              # Utility-Funktionen
+│       │   └── image.client.ts        # Fotos vor dem Upload verkleinern (Browser)
 │       └── ui/
 │           ├── modules/               # Haupt-UI-Komponenten (Svelte)
 │           │   ├── ChatFlow.svelte         # Chat-Verlauf & Nachrichten-Anzeige
@@ -111,11 +111,6 @@ vairbildlicher-google-web/
 ├── docs/                              # Analysen & Testbefunde der Technikprobe
 │   ├── ANALYSE-2026-09-23.md
 │   └── befunde/                       # Testbilder
-├── index.html                         # Statisches HTML-Mockup (KI-unabhängig)
-├── styles.css                         # Mockup-Styles (Material Design 3)
-├── app.js                             # Mockup-JavaScript
-├── manifest.json                      # PWA Web-App-Manifest
-├── icon.svg                           # App-Icon (SVG)
 ├── .env                               # Lokale Umgebungsvariablen (nicht committen!)
 ├── .env.example                       # Vorlage für Umgebungsvariablen
 ├── svelte.config.js                   # SvelteKit-Konfiguration
@@ -175,6 +170,7 @@ Nutzer:in
 | Modell | Verwendung |
 |---|---|
 | `gemini-3.8-flash` | Textzusammenfassung (Leichte Sprache), Chat, schwierige Wörter, Folgefragen, Challenge |
+| `gemini-3.8-flash-tts` | Sprachausgabe (Stimme „Kore“, WAV) |
 | `gemini-3.1-flash-image` | Verbildlichung: ein Bild pro KI-Antwort auf Knopfdruck (Gemini-Bildmodell, nicht Imagen) |
 
 Beide Modelle sind am 23.09.2026 mit dem Hackathon-Schlüssel per `models.list` bestätigt.
@@ -198,7 +194,9 @@ Die KI-Anweisungen sind als externe `.txt`-Dateien im Ordner `local-files/system
 ## Session-Verwaltung & Cache
 
 - **Chat-History:** Wird pro `chatId` (UUID) in Redis gespeichert (TTL: 30 Minuten, max. 30 Nachrichten).
-- **System-Prompts:** Werden beim ersten Aufruf aus den `.txt`-Dateien geladen und dann **ohne Ablaufzeit** gecacht, in Redis oder im Speicher.
+- **System-Prompts:** Werden aus den `.txt`-Dateien geladen und **5 Minuten** gecacht, in Redis oder im Speicher.
+  Der Ordner lässt sich mit `PROMPTS_DIR` ändern.
+  Standard ist `local-files/system-prompts`, relativ zum Arbeitsverzeichnis.
 - **Redis-Fallback:** Wenn Redis nicht erreichbar ist, wird automatisch ein In-Memory-Cache verwendet (keine Persistenz).
 - **Audio-Cache:** TTS-Audiodateien werden im Browser für die aktuelle Sitzung zwischengespeichert.
 
@@ -223,16 +221,18 @@ Kopiere `.env.example` nach `.env` und fülle die Werte aus:
 # Server
 NODE_ENV=development
 PORT=3000
-BODY_SIZE_LIMIT=50M
+BODY_SIZE_LIMIT=15M          # Fotos werden im Browser vorher verkleinert
 ORIGIN=http://localhost:5173
 
-# Pflicht: Google Gemini API-Schlüssel
+# Pflicht: Google Gemini API-Schlüssel (Text, Bilder und Sprachausgabe)
 # Zu beziehen über: https://aistudio.google.com/
 GEMINI_API_KEY=your_gemini_api_key_here
 
-# Optional: Google Cloud Text-to-Speech
-# (ohne diesen Key wird ein Fallback verwendet)
-GOOGLE_TTS_API_KEY=your_google_cloud_tts_api_key_here
+# Optional: Nur setzen, um Google Cloud TTS statt Gemini TTS zu nutzen
+# GOOGLE_TTS_API_KEY=your_google_cloud_tts_api_key_here
+
+# Optional: anderer Ordner für die System-Prompts
+# PROMPTS_DIR=/absoluter/pfad/zu/system-prompts
 
 # Optional: Redis (ohne → automatischer In-Memory-Fallback)
 # REDIS_URL=redis://localhost:6379
@@ -278,18 +278,6 @@ npm run dev
 | `npm run format` | Code automatisch formatieren |
 | `npm run clean` | `node_modules` und `.svelte-kit` entfernen |
 
-### Statisches HTML-Mockup (ohne KI)
-
-Für schnelle UI-Tests ohne API-Key kann das statische Mockup direkt im Browser geöffnet werden:
-
-```bash
-# Einfachste Option: Python-Webserver
-python -m http.server 8000
-# → http://localhost:8000
-```
-
-Das Mockup (`index.html`, `styles.css`, `app.js`) zeigt alle 4 Ansichten (Start, Vorschau, Laden, Ergebnis) mit simulierten Daten und ist unabhängig vom SvelteKit-Projekt.
-
 ---
 
 ## Deployment
@@ -301,10 +289,10 @@ npm run build
 node build
 ```
 
-**Produktiv-Domains** (eingetragen in `svelte.config.js` als `trustedOrigins`):
-- `https://verainfacher.de`
-- `https://www.verainfacher.de`
-- `https://vair.kopfhandundfuss.net`
+In `svelte.config.js` stehen als `trustedOrigins` nur lokale Adressen (`localhost:3000`, `localhost:5173`).
+Für eine Demo unter einer eigenen Domain muss diese dort ergänzt werden.
+`node build` muss im Hauptordner des Repos starten, sonst findet der Server die System-Prompts nicht.
+Alternativ gibt `PROMPTS_DIR` den Ordner vor.
 
 ---
 
@@ -314,10 +302,10 @@ node build
 - **ARIA-Attribute** auf allen interaktiven Elementen
 - **Tastaturnavigation** vollständig unterstützt
 - **Sichtbare Fokus-Ringe** für Tastaturnutzer:innen
-- **Sprachausgabe** über Google Cloud TTS.
-  Ohne `GOOGLE_TTS_API_KEY` nutzt der Code den `GEMINI_API_KEY`.
-  Für den Hackathon-Schlüssel ist Cloud TTS derzeit gesperrt.
-  Eine Web Speech API als Ersatz gibt es nur im statischen Mockup.
+- **Sprachausgabe** über Gemini TTS (`gemini-3.8-flash-tts`, Stimme „Kore“, WAV).
+  Mit gesetztem `GOOGLE_TTS_API_KEY` läuft sie stattdessen über Google Cloud TTS (`de-DE-Neural2-B`, MP3, etwas langsamer).
+  Gemini TTS erhält nur den reinen Text.
+  Stil-Anweisungen wie „Lies langsam vor:“ liest das Modell mit vor (getestet 23.09.2026).
 - **Großes, klares Interface** mit hohem Kontrast
 - Mobile-First-Design, optimiert für Smartphone-Nutzung
 
@@ -326,8 +314,10 @@ node build
 ## Hinweise für Entwickler:innen
 
 - **Svelte 5 Runes Mode** ist für das gesamte Projekt aktiv (`runes: true` in `svelte.config.js`). Kein `$store`, keine `onMount` mit Writable-Stores – stattdessen `$state`, `$derived`, `$effect`.
-- **System-Prompts anpassen:** Einfach die `.txt`-Dateien in `local-files/system-prompts/` bearbeiten. Der Prompt-Cache hat **keine** Ablaufzeit.
-  Ohne Redis wirken Änderungen erst nach einem Neustart des Servers.
-  Mit Redis müssen die Schlüssel `vair:prompts:*` gelöscht werden.
+- **System-Prompts anpassen:** Einfach die `.txt`-Dateien in `local-files/system-prompts/` bearbeiten. Änderungen wirken spätestens nach 5 Minuten, wenn der Prompt-Cache abläuft.
+  Sofort wirken sie nach einem Neustart des Servers oder wenn die Redis-Schlüssel `vair:prompts:*` gelöscht werden.
+- **Typen bei `$state`:** `$state<T | null>(null)` schreiben, nicht `let x: T | null = $state(null)`.
+  Sonst leitet TypeScript nur `null` ab.
+- **Fotos:** `ChatFlow.svelte` verkleinert Fotos vor dem Senden über `src/lib/shared/image.client.ts` (max. 2048 px, JPEG 85 %).
 - **Neue API-Endpunkte:** Im Ordner `src/routes/api/<endpunkt>/+server.ts` anlegen (SvelteKit-Konvention).
 - **Kein globaler State-Manager:** Der App-State wird über Svelte Context (`setContext`/`getContext`) und Rune-State verwaltet.

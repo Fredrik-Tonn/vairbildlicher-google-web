@@ -33,7 +33,8 @@
 	let { onNewChat, inputDisabled = false }: { onNewChat: () => void, inputDisabled?: boolean } = $props()
 	
 	let totalCoins = $state(0)
-	let levelInfo: LevelSystem | null = $state(null)
+	let levelInfo = $state<LevelSystem | null>(null)
+	let LevelIcon = $derived(levelInfo ? iconComponents[levelInfo.currentLevelIcon] : null)
 	let showLevelUp = $state(false)
 	let showLevelTooltip = $state(false)
 	let headerRef: HTMLElement | undefined = $state()
@@ -178,11 +179,6 @@
 		color: #374151;
 	}
 	
-	.coins-icon {
-		font-size: 1.5rem;
-		line-height: 1;
-	}
-	
 	.points {
 		font-size: 1.125rem;
 	}
@@ -251,10 +247,6 @@
 		
 		.progress-bar {
 			height: 10px;
-		}
-		
-		.coins-icon {
-			font-size: 1.75rem;
 		}
 		
 		.points {
@@ -411,7 +403,7 @@
 	}
 </style>
 
-<header bind:this={headerRef} class="chat-header" role="banner">
+<header bind:this={headerRef} class="chat-header">
 	<div class="header-content">
 		<!-- Left Section: Coins and Progress -->
 		<div class="header-left">
@@ -458,9 +450,8 @@
 					type="button"
 					onclick={toggleLevelTooltip}
 				>
-					{#if iconComponents[levelInfo.currentLevelIcon]}
-						<svelte:component 
-							this={iconComponents[levelInfo.currentLevelIcon]} 
+					{#if LevelIcon}
+						<LevelIcon
 							size="40"
 							class="level-icon"
 							aria-hidden="true"
@@ -470,9 +461,8 @@
 					<!-- Level Info Tooltip -->
 					<div class="level-tooltip {showLevelTooltip ? 'show' : ''}">
 						<div class="tooltip-header">
-							{#if iconComponents[levelInfo.currentLevelIcon]}
-								<svelte:component 
-									this={iconComponents[levelInfo.currentLevelIcon]} 
+							{#if LevelIcon}
+								<LevelIcon
 									size="32"
 									class="text-gray-700"
 								/>
@@ -530,9 +520,8 @@
 			class="bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-8 py-6 rounded-2xl shadow-2xl text-center"
 		>
 			<div class="mb-2 flex justify-center" aria-hidden="true">
-				{#if iconComponents[levelInfo.currentLevelIcon]}
-					<svelte:component 
-						this={iconComponents[levelInfo.currentLevelIcon]} 
+				{#if LevelIcon}
+					<LevelIcon
 						size="64"
 						class="text-white"
 					/>

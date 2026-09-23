@@ -17,7 +17,8 @@ export const POST: RequestHandler = async ({ request }) => {
 		const { chatId } = parsed.output
 		const result = await generateMultipleChoiceChallenge(chatId)
 
-		return json(result)
+		// json(undefined) sends an empty body, which breaks response.json() on the client
+		return json(result ?? null)
 	} catch (error) {
 		console.error('Multiple Choice Challenge API Error:', error)
 		return json({ error: 'Failed to generate multiple choice challenge' }, { status: 500 })

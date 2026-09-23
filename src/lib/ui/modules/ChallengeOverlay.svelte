@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte'
 	import { gsap } from 'gsap'
 	import type { Challenge, ChallengeQuestion } from '$lib/shared/domain/verainfacher.model'
-	import { shuffleArray } from '$lib/shared/mockChallenge'
+	import { shuffleArray } from '$lib/shared/helper'
 	import { rewardManager } from '$lib/shared/rewardSystem'
 	import CoinCollectionOverlay from './CoinCollectionOverlay.svelte'
 
@@ -134,7 +134,7 @@
 			}
 		})
 		
-		const performancePoints = rewardManager.addChallengePerformanceReward(correctCount)
+		const performancePoints = rewardManager.addChallengePerformanceReward(correctCount, shuffledQuestions.length)
 		
 		performanceMessage = getPerformanceMessage(correctCount)
 		

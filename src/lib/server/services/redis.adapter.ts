@@ -1,4 +1,4 @@
-import { createClient, type RedisClientType } from 'redis'
+import { createClient } from 'redis'
 import { env } from '$env/dynamic/private'
 
 // In-memory fallback cache when Redis is not configured
@@ -34,8 +34,10 @@ class MemoryStorage {
 
 const memoryClient = new MemoryStorage()
 
-let client: RedisClientType | null = null
-let connectPromise: Promise<RedisClientType | MemoryStorage> | null = null
+type RedisClient = ReturnType<typeof createClient>
+
+let client: RedisClient | null = null
+let connectPromise: Promise<RedisClient | MemoryStorage> | null = null
 
 function createRedisClient() {
 	if (!env.REDIS_URL) {
@@ -47,7 +49,7 @@ function createRedisClient() {
 	})
 }
 
-export async function getRedisClient(): Promise<RedisClientType | MemoryStorage> {
+export async function getRedisClient(): Promise<RedisClient | MemoryStorage> {
 	if (!env.REDIS_URL) {
 		return memoryClient
 	}
@@ -59,14 +61,15 @@ export async function getRedisClient(): Promise<RedisClientType | MemoryStorage>
 		if (!redis) return memoryClient
 
 		client = redis
-		client.on('error', (error) => {
+		redis.on('error', (error) => {
 			console.warn('Redis client error (falling back to in-memory):', error?.message || error)
 		})
 	}
 
 	if (!connectPromise) {
-		connectPromise = client.connect()
-			.then(() => client!)
+		const redis = client
+		connectPromise = redis.connect()
+			.then(() => redis)
 			.catch((err) => {
 				console.warn('Failed to connect to Redis. Using in-memory fallback:', err?.message || err)
 				return memoryClient
