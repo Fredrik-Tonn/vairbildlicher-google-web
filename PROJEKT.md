@@ -2,7 +2,20 @@
 
 > **Träger:** KOPF, HAND + FUSS gGmbH  
 > **Repository:** [KopfHandundFuss/vairbildlicher-google-web](https://github.com/KopfHandundFuss/vairbildlicher-google-web)  
-> **Produktiv-URLs:** https://verainfacher.de · https://vair.kopfhandundfuss.net
+> **Produktiv-URLs:** keine eigenen. Die Verainfacher-Domains in `svelte.config.js` stammen aus der Ausgangscodebasis.
+
+> [!IMPORTANT]
+> **Status: Hackathon-Technikprobe (Google × Aktion Mensch)**
+> Dieses Repository prüft, ob sich im laufenden Chat **Bilder in Echtzeit** als Verständnishilfe erzeugen lassen.
+> Es ist **keine neue Version und keine Erweiterung des Verainfachers**.
+> Die folgende Beschreibung des Verainfachers erklärt die Ausgangscodebasis, auf der die Technikprobe aufbaut.
+>
+> **Analyse und Testergebnisse:** [docs/ANALYSE-2026-09-23.md](docs/ANALYSE-2026-09-23.md)
+> - Die Modelle `gemini-3.8-flash` und `gemini-3.1-flash-image` sind verfügbar.
+> - Text: ca. 6,5 s.
+> - Bild: ca. 10–11 s.
+> - Cloud TTS ist für den Hackathon-Schlüssel gesperrt (HTTP 403).
+> - Der aktuelle Bild-Prompt erzeugt trotz Verbot Schrift, falsche Daten und logoähnliche Elemente.
 
 ---
 
@@ -49,7 +62,7 @@ vairbildlicher-google-web/
 │   │       ├── difficult-words/       # POST /api/difficult-words → Worterklärungen
 │   │       ├── followup-questions/    # POST /api/followup-questions → Folgefragen
 │   │       ├── multiple-choice-challenge/ # POST /api/multiple-choice-challenge
-│   │       ├── visualize/             # POST /api/visualize → Bild-Illustration (Gemini Imagen)
+│   │       ├── visualize/             # POST /api/visualize → Bild-Illustration (gemini-3.1-flash-image)
 │   │       └── getfile/               # GET /api/getfile → lokale Datei-Auslieferung
 │   └── lib/
 │       ├── server/
@@ -58,7 +71,7 @@ vairbildlicher-google-web/
 │       │   │   ├── google-tts.service.ts # Google Cloud TTS Integration
 │       │   │   ├── redis.adapter.ts   # Redis-Client mit In-Memory-Fallback
 │       │   │   ├── chat.service.ts    # Chat-Koordination
-│       │   │   └── polly.service.ts   # (reserviert)
+│       │   │   └── polly.service.ts   # leer (Überbleibsel aus der Verainfacher-Codebasis)
 │       │   └── db/                    # Datenbank-Helfer
 │       ├── shared/
 │       │   ├── domain/                # TypeScript-Typen & Domain-Modelle
@@ -95,6 +108,9 @@ vairbildlicher-google-web/
 │       ├── DifficultWordsSystemPrompt.txt
 │       ├── FollowUpQuestionsSystemPrompt.txt
 │       └── ChallengeSystemPrompt.txt
+├── docs/                              # Analysen & Testbefunde der Technikprobe
+│   ├── ANALYSE-2026-09-23.md
+│   └── befunde/                       # Testbilder
 ├── index.html                         # Statisches HTML-Mockup (KI-unabhängig)
 ├── styles.css                         # Mockup-Styles (Material Design 3)
 ├── app.js                             # Mockup-JavaScript
@@ -145,7 +161,7 @@ Nutzer:in
    │               ▼             ▼
    │         /api/tts        /api/visualize
    │         Sprachausgabe   Bild-Illustration
-   │         (Google TTS)    (Gemini Imagen 3)
+   │         (Google TTS)    (gemini-3.1-flash-image)
    │
    └─ [Challenge] ──► ChallengeOverlay.svelte
                        Multiple-Choice-Quiz
@@ -159,7 +175,11 @@ Nutzer:in
 | Modell | Verwendung |
 |---|---|
 | `gemini-3.8-flash` | Textzusammenfassung (Leichte Sprache), Chat, schwierige Wörter, Folgefragen, Challenge |
-| `gemini-3.1-flash-image` | Bild-Illustration / Verbildlichung von Sätzen (Imagen) |
+| `gemini-3.1-flash-image` | Verbildlichung: ein Bild pro KI-Antwort auf Knopfdruck (Gemini-Bildmodell, nicht Imagen) |
+
+Beide Modelle sind am 23.09.2026 mit dem Hackathon-Schlüssel per `models.list` bestätigt.
+Der Bild-Prompt steht fest im Code (`generateSentenceIllustration` in `gemini.service.ts`).
+Er ist nicht als `.txt` ausgelagert.
 
 ### System-Prompts
 
@@ -178,7 +198,7 @@ Die KI-Anweisungen sind als externe `.txt`-Dateien im Ordner `local-files/system
 ## Session-Verwaltung & Cache
 
 - **Chat-History:** Wird pro `chatId` (UUID) in Redis gespeichert (TTL: 30 Minuten, max. 30 Nachrichten).
-- **System-Prompts:** Werden beim ersten Start aus den `.txt`-Dateien geladen, dann in Redis gecacht.
+- **System-Prompts:** Werden beim ersten Aufruf aus den `.txt`-Dateien geladen und dann **ohne Ablaufzeit** gecacht, in Redis oder im Speicher.
 - **Redis-Fallback:** Wenn Redis nicht erreichbar ist, wird automatisch ein In-Memory-Cache verwendet (keine Persistenz).
 - **Audio-Cache:** TTS-Audiodateien werden im Browser für die aktuelle Sitzung zwischengespeichert.
 
@@ -294,7 +314,10 @@ node build
 - **ARIA-Attribute** auf allen interaktiven Elementen
 - **Tastaturnavigation** vollständig unterstützt
 - **Sichtbare Fokus-Ringe** für Tastaturnutzer:innen
-- **Sprachausgabe** (Google Cloud TTS und Web Speech API als Fallback)
+- **Sprachausgabe** über Google Cloud TTS.
+  Ohne `GOOGLE_TTS_API_KEY` nutzt der Code den `GEMINI_API_KEY`.
+  Für den Hackathon-Schlüssel ist Cloud TTS derzeit gesperrt.
+  Eine Web Speech API als Ersatz gibt es nur im statischen Mockup.
 - **Großes, klares Interface** mit hohem Kontrast
 - Mobile-First-Design, optimiert für Smartphone-Nutzung
 
@@ -303,6 +326,8 @@ node build
 ## Hinweise für Entwickler:innen
 
 - **Svelte 5 Runes Mode** ist für das gesamte Projekt aktiv (`runes: true` in `svelte.config.js`). Kein `$store`, keine `onMount` mit Writable-Stores – stattdessen `$state`, `$derived`, `$effect`.
-- **System-Prompts anpassen:** Einfach die `.txt`-Dateien in `local-files/system-prompts/` bearbeiten. Redis-Cache leert sich automatisch nach 30 Minuten oder kann manuell geleert werden.
+- **System-Prompts anpassen:** Einfach die `.txt`-Dateien in `local-files/system-prompts/` bearbeiten. Der Prompt-Cache hat **keine** Ablaufzeit.
+  Ohne Redis wirken Änderungen erst nach einem Neustart des Servers.
+  Mit Redis müssen die Schlüssel `vair:prompts:*` gelöscht werden.
 - **Neue API-Endpunkte:** Im Ordner `src/routes/api/<endpunkt>/+server.ts` anlegen (SvelteKit-Konvention).
 - **Kein globaler State-Manager:** Der App-State wird über Svelte Context (`setContext`/`getContext`) und Rune-State verwaltet.

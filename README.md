@@ -1,5 +1,12 @@
 # Verainfacher (Material Design Web-App)
 
+> [!NOTE]
+> Dieses Repository ist eine **Hackathon-Technikprobe** (Google × Aktion Mensch) für Bilder in Echtzeit im Chat.
+> Es ist keine neue Version des Verainfachers.
+> Das Repo enthält zwei Teile:
+> - die **SvelteKit-App** mit Gemini, siehe [PROJEKT.md](PROJEKT.md) und [docs/ANALYSE-2026-09-23.md](docs/ANALYSE-2026-09-23.md)
+> - das unten beschriebene **statische Mockup** (`index.html`, `styles.css`, `app.js`)
+
 Eine barrierefreie Webanwendung für den **Verainfacher**, entwickelt im modernen **Material Design 3 (Material You)**.
 
 ![Original-Design](./icon.svg)
