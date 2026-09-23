@@ -29,12 +29,13 @@
 | Branch | Stand |
 |---|---|
 | `main` | `b7b3b1a`: initiales Projekt-Setup, unverändert |
-| `dev` | `afe3fc8` Analyse und Doku, `87fc2cb` Befunde behoben, `361bc34` Startseite nach Mockup, globale Kopfzeile und responsives Layout. Noch nicht in `main` übernommen. |
+| `dev` | `afe3fc8` Analyse und Doku, `87fc2cb` Befunde behoben, `361bc34` Startseite nach Mockup, globale Kopfzeile und responsives Layout, `5536fc2` Doku, `a0918c1` PDF-Upload und schlichte Titel-Symbole. Noch nicht in `main` übernommen. |
 
 **Fertig:**
 
 - Gemini für Text, Bild und Sprache.
 - Fotos werden vor dem Upload verkleinert.
+- PDF-Upload: PDFs gehen direkt an Gemini. Die Grenze liegt bei 20 MB pro Datei.
 - Typ-Prüfung ohne Fehler.
 - Neue Startseite, globale Kopfzeile mit Logo und Barrierefreiheitsmenü.
 - KI-Hinweis als eigene Seite.
@@ -54,7 +55,9 @@
 
 Der **Verainfacher** ist eine barrierefreie Web-Anwendung, die Menschen mit eingeschränkter Lesekompetenz (z. B. Menschen mit kognitiven Beeinträchtigungen, Lernbehinderung oder geringen Deutschkenntnissen) dabei hilft, schwer verständliche Texte – insbesondere Behördenpost und Amtsschreiben – schnell und einfach zu verstehen.
 
-**Kernfunktion:** Nutzer:innen fotografieren oder laden ein Bild eines Dokuments hoch. Die KI (Google Gemini) liest den Text aus dem Bild und gibt ihn in **Leichter und Einfacher Sprache** zurück – inklusive Erklärung schwieriger Wörter, Folgefragen und optionaler Sprachausgabe.
+**Kernfunktion:** Nutzer:innen fotografieren ein Dokument oder laden ein Bild oder eine PDF hoch.
+Die KI (Google Gemini) liest den Text und gibt ihn in **Easy Language Plus** zurück, einer Variante der Einfachen Sprache.
+Dazu kommen schwierige Wörter, Folgefragen, ein Quiz und eine Sprachausgabe.
 
 ---
 
@@ -206,6 +209,15 @@ Nutzer:in
 ---
 
 ## KI-Modelle
+
+**Kurz:** 5 Systemprompts, 3 Gemini-Modelle.
+Davon ist nur `gemini-3.8-flash` ein Sprachmodell (LLM), die beiden anderen sind Spezialmodelle für Bild und Sprache.
+Pro hochgeladenem Dokument laufen 4 Textaufrufe:
+
+- die Zusammenfassung,
+- danach gleichzeitig Folgefragen, schwierige Wörter und Quiz.
+
+Bild und Vorlesen kommen nur auf Knopfdruck dazu.
 
 | Modell | Verwendung |
 |---|---|
