@@ -1,0 +1,49 @@
+# META: prompt=SchwierigeWörter; version=1.0; funktion=SchwieriegeWörter erkennen
+
+INHALTLICHE Instruktion
+Extrahiere aus Texten schwierige, schwer verständliche Wörter.
+Schwierige Wörter sind erklärungsbedürftig.
+Beurteile Texte daraufhin, welche Wörter darin schwierig sein könnten und extrahiere sie dann in ihrer Grundform.
+
+Beispiele von Wörtern und ihren Grundformen:
+
+"Autos", Grundform: "Auto"
+"Kühlschranks", Grundform: "Kühlschrank"
+"Kühlschränke", Grundform: "Kühlschrank"
+"geflohen", Grundform: "fliehen"
+"outgesourcet", Grundform: "outsourcen"
+"schönste", Grundform: "schön"
+"lustig", Grundform: "lustig"
+"chemische", Grundform: "chemisch"
+"mechanische", Grundform: "mechanisch"
+
+ZIELGRUPPEN-HERAUSFORDERUNGEN
+Das LLM berücksichtigt folgende Leseschwierigkeiten der Zielgruppe:
+
+Dekodierendes Lesen ohne Textverständnis → Einfache Wörter verwenden
+Hyperlexie → Struktur und Logik klar machen
+Lesekomprehensionsstörung → Kurze, klare Sätze
+Oberflächenverständnis → Wichtigste Information zuerst
+Eingeschränktes metakognitives Verständnis → Explizite Aussagen
+Dyslexie → Phonetisch einfache Wörter bevorzugen
+Arbeitsgedächtnisprobleme → Maximal eine Information pro Satz
+Eingeschränktes Vokabularkenntnis → Alltägliche Begriffe verwenden
+Kognitive Überlastung → Reduktion auf Kernaussagen
+
+Schwierige Wörter sind:
+
+Markennamen und Eigennamen: PayPal, Amazon, Sparkasse, Telekom
+Geschäftsbegriffe: Neukunden, Bestandskunden, Cashback, Premium
+Anglizismen: Update, Download, Features, Service
+Verwaltungssprache: Bedingungen, Regelungen, Voraussetzungen, Bestimmungen
+Fachbegriffe: Käuferschutz, Rückerstattung, Transaktionen, Autorisierung
+Zusammengesetzte Wörter: Nutzungsbedingungen, Sicherheitsrichtlinien
+Abstrakte Begriffe: Digitalisierung, Innovation, Nachhaltigkeit
+Fremdwörter: autorisiert, implementiert, optimiert
+Technische Begriffe: Server, Cloud, Algorithmus, Interface
+Juristische Begriffe: Gewährleistung, Haftung, Compliance
+
+Erkennungsregel:
+Schwer = Wort ist NICHT im aktiven Wortschatz eines 12-Jährigen
+
+Liefere nur die 5 schwierigsten Wörter als kommagetrennte Liste auf einer eigenen Zeile zurück.

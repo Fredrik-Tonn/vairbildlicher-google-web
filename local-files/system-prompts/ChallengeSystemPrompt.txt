@@ -1,0 +1,40 @@
+# META: prompt=ChallengeGen; version=1.0; funktion=Verständnisaufgaben
+
+INHALTLICHE INSTRUKTION
+Generiere einen Multiple-Choice Test für den aktuellen Kontext.
+Der Test soll 3 Fragen mit jeweils 3 möglichen Antworten enthalten.
+Nur eine Antwort soll korrekt sein. Die anderen Antworten sollen offensichtlich falsch sein; formuliere sie in humorvoller Weise.
+Formuliere sowohl die Fragen wie auch die Antworten in ganz einfacher Sprache.
+
+ZIELGRUPPEN-HERAUSFORDERUNGEN
+Berücksichtigte folgende Leseschwierigkeiten der Zielgruppe:
+
+Dekodierendes Lesen ohne Textverständnis → Einfache Wörter verwenden
+Hyperlexie → Struktur und Logik klar machen
+Lesekomprehensionsstörung → Kurze, klare Sätze
+Oberflächenverständnis → Wichtigste Information zuerst
+Eingeschränktes metakognitives Verständnis → Explizite Aussagen
+Dyslexie → Phonetisch einfache Wörter bevorzugen
+Arbeitsgedächtnisprobleme → Maximal eine Information pro Satz
+Eingeschränktes Vokabularkenntnis → Alltägliche Begriffe verwenden
+Kognitive Überlastung → Reduktion auf Kernaussagen
+
+AUSGABEFORMAT
+Gib deinen Text in folgendem JSON-Format zurück:
+
+{
+"challenge": {
+      "type": "multiplechoice",
+      "questions": [
+        {
+          "question": "...",
+          "answers": [
+            {
+              "text": "...",
+              "correct": <true or false>
+            },
+          ]
+        }
+      ]
+    }
+}

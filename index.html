@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verainfacher – Texte einfach verstehen</title>
+  <meta name="description" content="Der Verainfacher hilft beim Verstehen von Texten. Machen Sie einfach ein Foto oder laden Sie ein Bild hoch.">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/svg+xml" href="icon.svg">
+  <meta name="theme-color" content="#1a73e8">
+
+  <!-- Google Fonts: Roboto & Google Material Symbols -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24..48,400..700,0..1,-50..200" />
+
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Header / App Bar -->
+  <header class="app-bar" role="banner">
+    <div class="app-bar-content">
+      <div class="logo-group">
+        <span class="material-symbols-rounded app-icon" aria-hidden="true">auto_stories</span>
+        <span class="app-title-badge">Leichte &amp; Einfache Sprache</span>
+      </div>
+      <button id="themeToggleBtn" class="icon-button" type="button" aria-label="Erscheinungsbild anpassen" title="Kontrast / Thema anpassen">
+        <span class="material-symbols-rounded" aria-hidden="true">contrast</span>
+      </button>
+    </div>
+  </header>
+
+  <main class="main-container" id="mainContent">
+    
+    <!-- State 1: Startansicht (exakt nach Screenshot-Vorlage) -->
+    <section class="screen-view active" id="startView" aria-labelledby="pageTitle">
+      <div class="content-wrapper">
+        <h1 class="page-title" id="pageTitle">Verainfacher</h1>
+
+        <div class="instruction-box" role="region" aria-label="Anleitung">
+          <p class="instruction-line">Machen Sie ein Foto von dem Text.</p>
+          <p class="instruction-line highlight">Der Verainfacher hilft beim Verstehen.</p>
+          <p class="instruction-line question">Sie wollen ein Foto machen?</p>
+          <p class="instruction-line">Dann drücken Sie den blauen Knopf mit dem Kamera-Bild.</p>
+        </div>
+
+        <!-- Aktions-Bereich mit Knöpfen -->
+        <div class="actions-container">
+          
+          <!-- Primärer Kamera-Knopf (groß & blau) -->
+          <div class="action-item primary-action">
+            <button 
+              type="button" 
+              class="camera-btn m3-ripple" 
+              id="cameraActionBtn"
+              aria-label="Kamera öffnen und Foto vom Text machen"
+              title="Kamera öffnen">
+              <span class="material-symbols-rounded camera-icon" aria-hidden="true">photo_camera</span>
+            </button>
+            <input 
+              type="file" 
+              id="cameraInput" 
+              accept="image/*" 
+              capture="environment" 
+              class="visually-hidden" 
+              tabindex="-1"
+              aria-hidden="true">
+          </div>
+
+          <!-- Sekundärer Upload-Knopf (rund mit Rahmen) -->
+          <div class="action-item secondary-action">
+            <button 
+              type="button" 
+              class="upload-btn m3-ripple" 
+              id="uploadActionBtn"
+              aria-label="Bild aus Datei oder Galerie hochladen"
+              title="Bild hochladen">
+              <span class="material-symbols-rounded upload-icon" aria-hidden="true">upload</span>
+            </button>
+            <span class="upload-label" id="uploadLabel">Bild hochladen</span>
+            <input 
+              type="file" 
+              id="fileInput" 
+              accept="image/*" 
+              class="visually-hidden" 
+              tabindex="-1"
+              aria-hidden="true">
+          </div>
+
+        </div>
+
+        <!-- Schnelle Test-Option für das Mockup -->
+        <div class="mockup-hint">
+          <p class="mockup-hint-text">
+            <span class="material-symbols-rounded hint-icon" aria-hidden="true">info</span>
+            Für dieses Mockup können Sie auch direkt ein
+            <button type="button" class="text-link-btn" id="loadSampleBtn">Beispiel-Dokument laden</button>.
+          </p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- State 2: Vorschau & Verarbeitung (Material Card) -->
+    <section class="screen-view" id="previewView" aria-labelledby="previewHeading" hidden>
+      <div class="preview-wrapper">
+        <div class="preview-card m3-card">
+          <div class="card-header">
+            <h2 id="previewHeading" class="card-title">Ihr Foto vom Text</h2>
+            <button type="button" class="icon-button" id="cancelPreviewBtn" aria-label="Foto verwerfen und zurück">
+              <span class="material-symbols-rounded" aria-hidden="true">close</span>
+            </button>
+          </div>
+
+          <div class="card-media">
+            <img id="previewImage" src="" alt="Vorschau des ausgewählten Text-Fotos">
+          </div>
+
+          <div class="card-actions">
+            <button type="button" class="m3-button outlined" id="retakeBtn">
+              <span class="material-symbols-rounded" aria-hidden="true">replay</span>
+              Neues Foto
+            </button>
+            <button type="button" class="m3-button filled" id="processBtn">
+              <span class="material-symbols-rounded" aria-hidden="true">auto_fix_high</span>
+              Text jetzt vereinfachen
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- State 3: Ladezustand (M3 Progress Indicator) -->
+    <section class="screen-view" id="loadingView" aria-live="polite" hidden>
+      <div class="loading-wrapper">
+        <div class="m3-spinner" role="progressbar" aria-label="Text wird gelesen und vereinfacht"></div>
+        <h2 class="loading-title">Text wird vereinfacht ...</h2>
+        <p class="loading-desc">Der Verainfacher liest den Text und bereitet ihn in Leichter Sprache für Sie auf.</p>
+      </div>
+    </section>
+
+    <!-- State 4: Ergebnis-Ansicht in Einfacher Sprache -->
+    <section class="screen-view" id="resultView" aria-labelledby="resultHeading" hidden>
+      <div class="result-wrapper">
+        <div class="result-card m3-card">
+          <div class="result-header">
+            <div class="badge-success">
+              <span class="material-symbols-rounded" aria-hidden="true">check_circle</span>
+              Erfolgreich vereinfacht
+            </div>
+            <button type="button" class="icon-button" id="readAloudBtn" aria-label="Text laut vorlesen" title="Vorlesen">
+              <span class="material-symbols-rounded" aria-hidden="true">volume_up</span>
+            </button>
+          </div>
+
+          <h2 id="resultHeading" class="result-title">Ihr vereinfachter Text:</h2>
+
+          <div class="simplified-text-box" id="simplifiedText">
+            <p><strong>Worum geht es in dem Brief?</strong></p>
+            <ul class="easy-list">
+              <li>Sie haben ein Schreiben von einem Amt bekommen.</li>
+              <li>Das Amt braucht bis zum <strong>15. Oktober</strong> eine Antwort.</li>
+              <li>Sie müssen ein Formular ausfüllen und unterschreiben.</li>
+              <li>Wenn Sie Hilfe brauchen, können Sie dort anrufen.</li>
+            </ul>
+            <div class="contact-box">
+              <span class="material-symbols-rounded" aria-hidden="true">call</span>
+              <span>Telefon-Nummer für Fragen: 030 / 123 456 78</span>
+            </div>
+          </div>
+
+          <div class="result-actions">
+            <button type="button" class="m3-button filled" id="startOverBtn">
+              <span class="material-symbols-rounded" aria-hidden="true">arrow_back</span>
+              Noch einen Text vereinfachen
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="app-footer">
+    <p>Verainfacher &bull; Entwickelt für Barrierefreiheit &amp; Einfache Sprache</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

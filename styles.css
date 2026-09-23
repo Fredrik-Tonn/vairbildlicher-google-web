@@ -1,0 +1,620 @@
+/* ==========================================================================
+   Verainfacher – Material Design 3 (M3) Stylesheet
+   Speziell optimiert für Barrierefreiheit, Lesbarkeit & Einfache Sprache
+   ========================================================================== */
+
+:root {
+  /* Material Design 3 Color Tokens */
+  --md-sys-color-primary: #1a73e8;
+  --md-sys-color-on-primary: #ffffff;
+  --md-sys-color-primary-container: #d3e3fd;
+  --md-sys-color-on-primary-container: #041e49;
+  
+  --md-sys-color-surface: #ffffff;
+  --md-sys-color-surface-dim: #f8f9fa;
+  --md-sys-color-on-surface: #1f1f1f;
+  --md-sys-color-on-surface-variant: #444746;
+  
+  --md-sys-color-outline: #747775;
+  --md-sys-color-outline-variant: #c4c7c5;
+  --md-sys-color-border-subtle: #dadce0;
+
+  --md-sys-color-success: #137333;
+  --md-sys-color-success-container: #c4eed0;
+  
+  /* Focus & Accessibility */
+  --focus-ring-color: #0b57d0;
+  --focus-ring-width: 3px;
+  --focus-ring-offset: 3px;
+
+  /* Typography */
+  --font-family-base: 'Roboto', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  
+  /* Elevations (M3 Shadow Levels) */
+  --elevation-1: 0 1px 3px 1px rgba(0, 0, 0, 0.15), 0 1px 2px 0 rgba(0, 0, 0, 0.30);
+  --elevation-2: 0 2px 6px 2px rgba(0, 0, 0, 0.15), 0 1px 2px 0 rgba(0, 0, 0, 0.30);
+  --elevation-3: 0 4px 12px 3px rgba(0, 0, 0, 0.15), 0 1px 3px 0 rgba(0, 0, 0, 0.30);
+  --elevation-camera: 0 6px 20px rgba(26, 115, 232, 0.32), 0 2px 6px rgba(0, 0, 0, 0.14);
+  --elevation-camera-hover: 0 8px 26px rgba(26, 115, 232, 0.42), 0 3px 8px rgba(0, 0, 0, 0.18);
+  
+  /* Transitions */
+  --transition-standard: cubic-bezier(0.2, 0.0, 0, 1.0);
+}
+
+/* Optionaler Hoher Kontrast-Modus */
+body.high-contrast {
+  --md-sys-color-primary: #004fc7;
+  --md-sys-color-on-surface: #000000;
+  --md-sys-color-on-surface-variant: #000000;
+  --md-sys-color-border-subtle: #000000;
+  --md-sys-color-surface: #ffffff;
+}
+
+/* Reset & Basis */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  min-height: 100vh;
+  font-family: var(--font-family-base);
+  color: var(--md-sys-color-on-surface);
+  background-color: var(--md-sys-color-surface);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.5;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Barrierefreie Tastatur-Fokussierung */
+button:focus-visible,
+a:focus-visible,
+[tabindex="0"]:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+/* Hilfsklassen */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Header / App Bar */
+.app-bar {
+  width: 100%;
+  padding: 12px 24px;
+  background-color: var(--md-sys-color-surface);
+  border-bottom: 1px solid transparent;
+  display: flex;
+  justify-content: center;
+}
+
+.app-bar-content {
+  width: 100%;
+  max-width: 960px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--md-sys-color-primary);
+}
+
+.app-icon {
+  font-size: 26px;
+}
+
+.app-title-badge {
+  font-size: 0.875rem;
+  font-weight: 500;
+  background-color: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+  padding: 4px 12px;
+  border-radius: 16px;
+}
+
+.icon-button {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--md-sys-color-on-surface-variant);
+  transition: background-color 0.2s;
+}
+
+.icon-button:hover {
+  background-color: rgba(0, 0, 0, 0.06);
+}
+
+/* Haupt-Container */
+.main-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 20px 48px;
+}
+
+.screen-view {
+  width: 100%;
+  max-width: 680px;
+  display: none;
+}
+
+.screen-view.active {
+  display: block;
+}
+
+/* Startansicht (Screenshot-Treue) */
+.content-wrapper {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.page-title {
+  font-size: clamp(2rem, 5vw, 2.75rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--md-sys-color-on-surface);
+  margin-top: 16px;
+  margin-bottom: 32px;
+}
+
+.instruction-box {
+  max-width: 520px;
+  margin: 0 auto 44px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.instruction-line {
+  font-size: clamp(1rem, 2.5vw, 1.1875rem);
+  color: var(--md-sys-color-on-surface-variant);
+  line-height: 1.5;
+  font-weight: 400;
+}
+
+.instruction-line.highlight {
+  color: var(--md-sys-color-on-surface);
+  font-weight: 500;
+}
+
+.instruction-line.question {
+  margin-top: 6px;
+}
+
+/* Aktions-Bereich (Buttons) */
+.actions-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 36px;
+  width: 100%;
+  margin-bottom: 40px;
+}
+
+.action-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Primärer Kamera-Knopf */
+.camera-btn {
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  border: none;
+  background-color: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--elevation-camera);
+  transition: transform 0.2s var(--transition-standard),
+              box-shadow 0.2s var(--transition-standard),
+              background-color 0.2s ease;
+  position: relative;
+  overflow: hidden;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.camera-btn:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: var(--elevation-camera-hover);
+  background-color: #1765cc;
+}
+
+.camera-btn:active {
+  transform: translateY(1px) scale(0.98);
+  box-shadow: var(--elevation-2);
+}
+
+.camera-icon {
+  font-size: 58px;
+  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 48;
+}
+
+/* Sekundärer Upload-Knopf */
+.upload-btn {
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  background-color: #ffffff;
+  border: 1.5px solid var(--md-sys-color-border-subtle);
+  color: var(--md-sys-color-on-surface);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: background-color 0.2s, border-color 0.2s, transform 0.15s, box-shadow 0.2s;
+  position: relative;
+  overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.upload-btn:hover {
+  background-color: #f8f9fa;
+  border-color: #bec2c6;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+  transform: translateY(-1px);
+}
+
+.upload-btn:active {
+  background-color: #f1f3f4;
+  transform: translateY(1px);
+}
+
+.upload-icon {
+  font-size: 36px;
+  font-variation-settings: 'wght' 500, 'opsz' 36;
+}
+
+.upload-label {
+  margin-top: 10px;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--md-sys-color-on-surface);
+  letter-spacing: 0.01em;
+}
+
+/* Mockup-Hinweis / Demo-Dokument */
+.mockup-hint {
+  margin-top: 8px;
+  background-color: var(--md-sys-color-surface-dim);
+  border: 1px dashed var(--md-sys-color-outline-variant);
+  border-radius: 12px;
+  padding: 10px 16px;
+  max-width: 480px;
+}
+
+.mockup-hint-text {
+  font-size: 0.875rem;
+  color: var(--md-sys-color-on-surface-variant);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.hint-icon {
+  font-size: 18px;
+  color: var(--md-sys-color-primary);
+}
+
+.text-link-btn {
+  background: none;
+  border: none;
+  color: var(--md-sys-color-primary);
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 0 2px;
+}
+
+.text-link-btn:hover {
+  color: #0b57d0;
+}
+
+/* Material 3 Card Layouts */
+.m3-card {
+  background-color: var(--md-sys-color-surface);
+  border-radius: 24px;
+  border: 1px solid var(--md-sys-color-border-subtle);
+  box-shadow: var(--elevation-2);
+  overflow: hidden;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Buttons (M3 Standard) */
+.m3-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 48px;
+  padding: 0 24px;
+  border-radius: 24px;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  transition: background-color 0.2s, box-shadow 0.2s, transform 0.1s;
+}
+
+.m3-button.filled {
+  background-color: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+  box-shadow: var(--elevation-1);
+}
+
+.m3-button.filled:hover {
+  background-color: #1765cc;
+  box-shadow: var(--elevation-2);
+}
+
+.m3-button.outlined {
+  background-color: transparent;
+  color: var(--md-sys-color-on-surface);
+  border: 1.5px solid var(--md-sys-color-border-subtle);
+}
+
+.m3-button.outlined:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+  border-color: var(--md-sys-color-outline);
+}
+
+/* State 2: Vorschau */
+.preview-wrapper,
+.result-wrapper,
+.loading-wrapper {
+  width: 100%;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.card-media {
+  width: 100%;
+  max-height: 420px;
+  background-color: #111;
+  border-radius: 16px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-media img {
+  width: 100%;
+  height: auto;
+  max-height: 420px;
+  object-fit: contain;
+}
+
+.card-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+/* State 3: Ladeanzeige (M3 Spinner) */
+.loading-wrapper {
+  text-align: center;
+  padding: 60px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.m3-spinner {
+  width: 56px;
+  height: 56px;
+  border: 5px solid var(--md-sys-color-primary-container);
+  border-top-color: var(--md-sys-color-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.loading-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.loading-desc {
+  color: var(--md-sys-color-on-surface-variant);
+  max-width: 440px;
+  font-size: 1.05rem;
+}
+
+/* State 4: Ergebnis */
+.result-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.badge-success {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background-color: var(--md-sys-color-success-container);
+  color: var(--md-sys-color-success);
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.result-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+}
+
+.simplified-text-box {
+  background-color: var(--md-sys-color-surface-dim);
+  border-radius: 16px;
+  padding: 20px;
+  border-left: 4px solid var(--md-sys-color-primary);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.easy-list {
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 1.05rem;
+}
+
+.contact-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background-color: #ffffff;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--md-sys-color-primary);
+  border: 1px solid var(--md-sys-color-border-subtle);
+}
+
+.result-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+/* Footer */
+.app-footer {
+  text-align: center;
+  padding: 20px;
+  font-size: 0.8125rem;
+  color: var(--md-sys-color-outline);
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* Mobile Optimierungen */
+@media (max-width: 600px) {
+  .page-title {
+    margin-top: 8px;
+    margin-bottom: 24px;
+  }
+  
+  .instruction-box {
+    margin-bottom: 36px;
+    gap: 8px;
+  }
+  
+  .camera-btn {
+    width: 116px;
+    height: 116px;
+  }
+  
+  .camera-icon {
+    font-size: 50px;
+  }
+  
+  .upload-btn {
+    width: 68px;
+    height: 68px;
+  }
+  
+  .upload-icon {
+    font-size: 32px;
+  }
+
+  .card-actions {
+    flex-direction: column;
+  }
+
+  .m3-button {
+    width: 100%;
+  }
+}
+
+/* Material Ripple Wave Animation */
+.ripple-wave {
+  position: absolute;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.45);
+  transform: scale(0);
+  animation: ripple-animation 0.6s linear;
+  pointer-events: none;
+}
+
+.upload-btn .ripple-wave {
+  background-color: rgba(0, 0, 0, 0.15);
+}
+
+@keyframes ripple-animation {
+  to {
+    transform: scale(3);
+    opacity: 0;
+  }
+}
+
+/* Audio Read-Aloud Aktiv-Zustand */
+.icon-button.reading {
+  color: var(--md-sys-color-primary);
+  background-color: var(--md-sys-color-primary-container);
+  animation: pulse 1s infinite alternate;
+}
+
+@keyframes pulse {
+  from { transform: scale(1); }
+  to { transform: scale(1.1); }
+}

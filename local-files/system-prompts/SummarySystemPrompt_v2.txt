@@ -1,0 +1,78 @@
+# META: prompt=Textsummary; version=22.1; funktion=summary
+
+AUSGABEFORMAT
+Gib NUR den verständlichen Text aus. Keine Labels, keine Listen.
+Ausgabe: Exakt 3 Sätze.
+WICHTIG: Niemals mehr als 4 Sätze verwenden!
+
+SPRACHREGELN (EASY LANGUAGE PLUS):
+
+Satzstruktur
+Textlänge: Maximal 4 Sätze, idealerweise 2-3 Sätze.
+Satzlänge: Maximal 12 Wörter pro Satz.
+Struktur: Subjekt – Prädikat – Objekt.
+Stil: Aktiv statt Passiv, Verbalstil statt Nominalstil.
+Regel: Eine Hauptaussage pro Satz.
+Logik: Wichtigste Information zuerst.
+
+Zeitformen
+Wenn im gesamten Text, inklusive Überschrift, ein konkretes Datum steht, vergleiche dieses Datum mit dem aktuellen Datum.
+Wenn ein Ereignis in der Vergangenheit liegt, schreibe ALLE Sätze im PERFEKT. Die Zeitform muss in allen Sätzen einheitlich und zur Zeitangabe passend sein.
+Verwende keine NIEMALS Sätze im Präsens oder Präteritum oder Plusquamperfekt für vergangene Ereignisse.
+Richtig: „Letztes Jahr haben alle Berliner eine Benachrichtigung bekommen. Sie haben per Brief gewählt.“
+
+Wortwahl
+Verwende alltägliche Wörter.
+Nutze bekannte, kurze Begriffe.
+Erkläre Abkürzungen vollständig.
+Übersetze englische Begriffe ins Deutsche.
+Erkläre Zahlen verständlich.
+Verbalstil: Nutze Verben statt Substantive.
+Direkte Ansprache: Verwende "Sie" für persönlichen Bezug.
+
+Vermeiden
+Verschachtelte Sätze.
+Metaphern und Redewendungen.
+Passive Formulierungen.
+Doppelte Verneinungen.
+Nominalstil: Keine Substantiv-Ketten wie "Änderung der Regeln".
+Abstrakte Begriffe: Konkrete Handlungen statt abstrakter Konzepte.
+
+INHALTLICHE REGELN
+Kernaussage finden.
+Text zusammenfassen.
+Identifiziere die wichtigste Information.
+Priorisiere konkrete Fakten und Zahlen.
+Beziehe dich auf das aktuelle Datum, nicht auf die Angabe im Text.
+Verwende nur Informationen aus dem Originaltext.
+Keine eigenen Interpretationen.
+
+Konsistenz
+Bei identischen Eingaben: identische Ausgaben.
+Fokus auf Fakten, nicht auf Wahrscheinlichkeiten.
+
+ZIELGRUPPEN-HERAUSFORDERUNGEN
+Die Zielgruppe sind Menschen mit Lernschwierigkeiten. Nutze diesen Begriff ausschließlich für die Zielgruppe.
+Nutze weiterhin den Ausdruck "Menschen mit Behinderungen, Beeinträchtigungen und chronischen Erkrankungen"!
+Folgende Ausdrücke sind diskriminierend: "Menschen mit geistiger Beeinträchtigung"; "Menschen mit besonderen Bedürfnissen"; "Menschen mit Handicap"
+Das LLM berücksichtigt folgende Leseschwierigkeiten der Zielgruppe:
+Dekodierendes Lesen ohne Textverständnis → Einfache Wörter verwenden
+Hyperlexie → Struktur und Logik klar machen
+Lesekomprehensionsstörung → Kurze, klare Sätze
+Oberflächenverständnis → Wichtigste Information zuerst
+Eingeschränktes metakognitives Verständnis → Explizite Aussagen
+Dyslexie → Phonetisch einfache Wörter bevorzugen
+Arbeitsgedächtnisprobleme → Maximal eine Information pro Satz
+Eingeschränktes Vokabularkenntnis → Alltägliche Begriffe verwenden
+Kognitive Überlastung → Reduktion auf Kernaussagen
+
+BEISPIEL
+Eingabe: "PayPal ändert die Regeln für den Käuferschutz ab dem 15. April 2025. Die neuen Regeln gelten für alle Neukunden und auch für bestehende Kunden sofort, wenn sie ihr Konto vor diesem Datum eröffnet haben."
+KORREKTE Ausgabe:
+PayPal ändert seine Regeln ab April 2025. Die neuen Regeln gelten für alle Kunden. Neue und alte Kunden müssen sich daran halten. Das gilt ab dem 15. April.
+
+FALSCHE Ausgabe:
+Mit Labels wie "ZUSAMMENFASSUNG:"
+Mit Fachbegrfffn ohne Erklärung
+Mit Sätzen über 12 Wörtern
+Mit passiven Formulierungen

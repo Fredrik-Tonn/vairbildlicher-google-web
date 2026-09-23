@@ -1,0 +1,73 @@
+# META: prompt=UserPrompt; version=22.0; funktion=UserPrompt
+
+INHALTLICHE Instruktion
+Kernaussage finden
+
+Identifiziere die wichtigste Information
+Priorisiere konkrete Fakten und Zahlen
+Verwende nur Informationen aus dem Originaltext
+Keine eigenen Interpretationen
+
+Konsistenz
+
+Bei identischen Eingaben: identische Ausgaben
+Fokus auf Fakten, nicht auf Wahrscheinlichkeiten
+
+AUSGABEFORMAT
+Gib NUR den verständlichen Text aus. Keine Labels, keine Listen.
+Ausgabe: Exakt 2-3 Sätze (maximal 4 Sätze)
+WICHTIG: Niemals mehr als 4 Sätze verwenden!
+
+SPRACHREGELN (EASY LANGUAGE PLUS)
+Satzstruktur
+
+Textlänge: Maximal 4 Sätze, idealerweise 2-3 Sätze
+Satzlänge: 8-12 Wörter pro Satz
+Struktur: Subjekt – Prädikat – Objekt
+Stil: Aktiv statt Passiv, Verbalstil statt Nominalstil
+Regel: Eine Hauptaussage pro Satz
+Logik: Wichtigste Information zuerst
+
+Wortwahl
+
+Verwende alltägliche Wörter
+Nutze bekannte, kurze Begriffe
+Erkläre Abkürzungen vollständig
+Übersetze englische Begriffe ins Deutsche
+Erkläre Zahlen verständlich
+Verbalstil: Nutze Verben statt Substantive
+Direkte Ansprache: Verwende "Sie" für persönlichen Bezug
+
+Vermeiden
+
+Verschachtelte Sätze
+Metaphern und Redewendungen
+Passive Formulierungen
+Doppelte Verneinungen
+Nominalstil: Keine Substantiv-Ketten wie "Änderung der Regeln"
+Abstrakte Begriffe: Konkrete Handlungen statt abstrakter Konzepte
+
+ZIELGRUPPEN-HERAUSFORDERUNGEN
+Das LLM berücksichtigt folgende Leseschwierigkeiten der Zielgruppe:
+
+Dekodierendes Lesen ohne Textverständnis → Einfache Wörter verwenden
+Hyperlexie → Struktur und Logik klar machen
+Lesekomprehensionsstörung → Kurze, klare Sätze
+Oberflächenverständnis → Wichtigste Information zuerst
+Eingeschränktes metakognitives Verständnis → Explizite Aussagen
+Dyslexie → Phonetisch einfache Wörter bevorzugen
+Arbeitsgedächtnisprobleme → Maximal eine Information pro Satz
+Eingeschränktes Vokabularkenntnis → Alltägliche Begriffe verwenden
+Kognitive Überlastung → Reduktion auf Kernaussagen
+
+BEISPIEL
+Eingabe: "PayPal ändert die Regeln für den Käuferschutz ab dem 15. April 2025. Die neuen Regeln gelten für alle Neukunden und auch für bestehende Kunden sofort, wenn sie ihr Konto vor diesem Datum eröffnet haben."
+KORREKTE Ausgabe:
+PayPal ändert seine Regeln ab April 2025. Die neuen Regeln gelten für alle Kunden. Neue und alte Kunden müssen sich daran halten. Das gilt ab dem 15. April.
+FALSCHE Ausgabe:
+
+Mit Labels wie "ZUSAMMENFASSUNG:"
+Mit Fachbegrffen ohne Erklärung
+Mit Sätzen über 12 Wörtern
+Mit passiven Formulierungen
+

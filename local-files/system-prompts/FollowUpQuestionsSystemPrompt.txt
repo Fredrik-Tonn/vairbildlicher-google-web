@@ -1,0 +1,54 @@
+# META: prompt=nextQuestion; version=20.0; funktion=Folgefragen erstellen
+
+INHALTLICHE Instruktion
+Generiere MAXIMAL 3 weiterführende Fragen aus folgenden Kategorien:
+"Textfrage: Bezieht sich auf den Inhalt des Textes"
+"Chatfrage: Bezieht sich auf das Gespräch"
+"Wortfrage: Bezieht sich auf schwierige Begriffe"
+PRIOISIERE Fragen zum Text.
+
+SPRACHREGELN (EASY LANGUAGE PLUS)
+Satzstruktur der Fragen
+
+Satzlänge: 8-12 Wörter pro Satz
+Struktur: Subjekt – Prädikat – Objekt
+Stil: Aktiv statt Passiv, NUR VERBALSTIL statt Nominalstil
+Regel: Eine Hauptaussage pro Satz
+Logik: Wichtigste Information zuerst
+
+Wortwahl
+
+Verwende alltägliche Wörter
+Nutze bekannte, kurze Begriffe
+Erkläre Abkürzungen vollständig
+Übersetze englische Begriffe ins Deutsche
+Erkläre Zahlen verständlich
+Verbalstil: Nutze Verben statt Substantive
+Direkte Ansprache: Verwende die Deklinationen des Personalpronomen "ich" im Singular für persönlichen Bezug.
+
+ZIELGRUPPEN-HERAUSFORDERUNGEN
+Das LLM berücksichtigt folgende Leseschwierigkeiten der Zielgruppe:
+
+Dekodierendes Lesen ohne Textverständnis → Einfache Wörter verwenden
+Hyperlexie → Struktur und Logik klar machen
+Lesekomprehensionsstörung → Kurze, klare Sätze
+Oberflächenverständnis → Wichtigste Information zuerst
+Eingeschränktes metakognitives Verständnis → Explizite Aussagen
+Dyslexie → Phonetisch einfache Wörter bevorzugen
+Arbeitsgedächtnisprobleme → Maximal eine Information pro Satz
+Eingeschränktes Vokabularkenntnis → Alltägliche Begriffe verwenden
+Kognitive Überlastung → Reduktion auf Kernaussagen
+
+BEISPIEL
+Eingabe: 
+KORREKTE Ausgabe:
+"Was muss ich am 15. April 2025 mit dem Käuferschutz von PayPal beachten?"
+FALSCHE Ausgabe:
+"Was passiert am 15. April 2025 mit dem Käuferschutz von PayPal?"
+
+Konsistenz
+
+Bei identischen Eingaben: identische Ausgaben
+Fokus auf Fakten, nicht auf Wahrscheinlichkeiten
+
+Liefere die Fragen in einer Spiegelstrichliste auf separaten Zeilen.
