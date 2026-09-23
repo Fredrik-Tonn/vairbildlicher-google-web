@@ -103,16 +103,16 @@ export const getChatCompletion = async ({ prompt, images, chatId }: ChatRequest)
 	const history = await loadHistory(chatId)
 
 	let systemInstruction = ''
-	const inputs: Array<{ type: 'text' | 'image'; text?: string; data?: string; mime_type?: string }> = []
+	const inputs: Array<{ type: 'text' | 'image' | 'document'; text?: string; data?: string; mime_type?: string }> = []
 
 	if (images && images.length > 0) {
 		systemInstruction = prompts['SummarySystemPrompt_v2']
 
-		// Add document images directly into multimodal input
+		// Add photos and PDFs directly into the multimodal input (PDFs as 'document')
 		for (const img of images) {
 			const { mimeType, base64 } = parseBase64Image(img)
 			inputs.push({
-				type: 'image',
+				type: mimeType === 'application/pdf' ? 'document' : 'image',
 				data: base64,
 				mime_type: mimeType
 			})
@@ -121,8 +121,8 @@ export const getChatCompletion = async ({ prompt, images, chatId }: ChatRequest)
 		inputs.push({
 			type: 'text',
 			text: userPrompt
-				? `Lies den Text auf diesen Bildern und beantworte Folgendes in Leichter Sprache: ${userPrompt}`
-				: 'Lies den Text auf diesen Bildern und fasse ihn exakt nach den Regeln für Leichte Sprache zusammen.'
+				? `Lies den Text auf diesen Bildern oder Dokumenten und beantworte Folgendes in Leichter Sprache: ${userPrompt}`
+				: 'Lies den Text auf diesen Bildern oder Dokumenten und fasse ihn exakt nach den Regeln für Leichte Sprache zusammen.'
 		})
 	} else {
 		systemInstruction = prompts['AnswerSystemPrompt_v2']

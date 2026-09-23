@@ -43,8 +43,8 @@
 				}, false
 			)
 			for (const file of files) {
-				if (file.size > 30 * 1024 * 1024) {
-					alert(`Datei ${file.name} ist zu groß. Bitte nur Dateien unter 30 MB hochladen.`)
+				if (file.size > 20 * 1024 * 1024) {
+					alert(`Die Datei ${file.name} ist zu groß. Eine Datei darf höchstens 20 MB groß sein.`)
 				} else {
 					let intervalId = setInterval(() => {
 						if (!wait) {

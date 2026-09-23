@@ -102,7 +102,10 @@ Gemessen am 23.09.2026:
 7. **Sprache:**
    - ~~„KI“ wird nicht erklärt~~, ~~„Fremdwörtern“~~, ~~„&“ in Schritt 2~~. **Erledigt 23.09.2026:** Schritt 2 heißt jetzt „Der Verainfacher macht es einfach“. Darunter stehen 3 Sätze in je einer Zeile: „Sie müssen nur wenige Sekunden warten.“, „Der Verainfacher macht Fremd-Wörter einfach.“, „Lange Sätze werden kurz und klar.“
    - ~~„per Klick“~~ **Erledigt 23.09.2026:** Schritt 3 lautet jetzt „Der einfache Text wird angezeigt.“, „Sie können ihn leicht lesen.“, „Oder tippen auf Vorlesen.“ und „Zum Anhören.“, jeder Satz in einer eigenen Zeile.
-   - Noch offen: „PDF, JPG“, „Maximal 20 MB“.
+   - ~~Noch offen: „PDF, JPG“, „Maximal 20 MB“.~~ Stimmt jetzt mit der App überein (siehe Punkt 10).
+   - **Erledigt 23.09.2026:**
+     - Die Überschrift der ersten Karte heißt jetzt „Foto erstellen“ statt „Text fotografieren“.
+     - Die Symbole neben den Überschriften der drei Karten „Foto erstellen“, „Datei hochladen“ und „Hilfe“ hatten eine farbige Kachel und wirkten wie Schalter. Sie stehen jetzt schlicht in Textfarbe neben der Überschrift.
    - ~~„Smartphone“~~ **Erledigt 23.09.2026:** Schritt 1 lautet jetzt „Halten Sie die Kamera auf den Brief.“ und „Oder wählen Sie eine Datei aus.“, jeder Satz in einer eigenen Zeile. Die Schritt-Texte sind dafür als Zeilen-Liste angelegt (`lines`).
    - Das Zeichen „&“ steht noch im Ablagefeld („ziehen & ablegen“).
    - Auf dem Handy brechen längere Sätze mitten im Satz um, zum Beispiel „Sie müssen nur wenige Sekunden / warten.“. Nach EL+ sollten Zeilen an Sinn-Grenzen umbrechen.
@@ -119,9 +122,16 @@ Gemessen am 23.09.2026:
    - Alle Symbole sind einheitlich `--color-icon`.
    - Die Tokens heißen `--color-step-1` bis `--color-step-3` (in `layout.css`).
 9. ~~**Name:** „Verainfacher“ im Design, „Verbildlicher“ in Chat und Seitentitel.~~ **Erledigt 23.09.2026:** überall „Verainfacher“. Nur die Bildfunktion heißt im Code weiter „Verbildlicher“.
-10. **Angaben passen nicht zur App:**
-    - Das Design nennt „PDF, JPG“. Die App nimmt nur Bilder an (PNG, JPEG, GIF, WebP).
-    - Das Design nennt „Maximal 20 MB“. Die App prüft 30 MB.
+10. ~~**Angaben passen nicht zur App:**~~ **Erledigt 23.09.2026:**
+    - **PDF:** Die App nimmt jetzt PDF-Dateien an (PNG, JPEG, GIF, WebP, PDF).
+      PDFs gehen unverändert als `document` an Gemini, Fotos werden vorher verkleinert.
+      In Vorschau und Chat erscheint ein PDF-Symbol.
+      Getestet mit einem Steuerbescheid als PDF: richtige Zusammenfassung nach 10,7 s.
+    - **Größe:** Die Grenze liegt jetzt bei 20 MB pro Datei (`maxUploadFileSizeMB` in `const.client.ts`), wie im Design angegeben.
+      Die 30 MB stammten aus der alten Verainfacher-Codebasis.
+      Gemini selbst hat im Test auch PDFs mit 25, 60 und 100 MB angenommen (100 MB nach 49 s).
+      Die 20 MB sind also keine technische Grenze, sondern halten Upload und Wartezeit auf dem Handy kurz.
+    - Für `node build` steht `BODY_SIZE_LIMIT=140M` in `.env.example` (5 × 20 MB plus Base64).
 11. **Link „Erklärung zur Barrierefreiheit“:** Er hat kein Ziel, weil es auf kopfhandundfuss.de keine solche Seite gibt (404).
 12. **Kein Impressum** im Footer: Das Design sieht keins vor.
 

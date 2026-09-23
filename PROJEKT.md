@@ -263,7 +263,7 @@ Kopiere `.env.example` nach `.env` und fülle die Werte aus:
 # Server
 NODE_ENV=development
 PORT=3000
-BODY_SIZE_LIMIT=15M          # Fotos werden im Browser vorher verkleinert
+BODY_SIZE_LIMIT=140M         # nur für node build: 5 Dateien × 20 MB plus Base64
 ORIGIN=http://localhost:5173
 
 # Pflicht: Google Gemini API-Schlüssel (Text, Bilder und Sprachausgabe)
@@ -373,7 +373,11 @@ Alternativ gibt `PROMPTS_DIR` den Ordner vor.
   Sofort wirken sie nach einem Neustart des Servers oder wenn die Redis-Schlüssel `vair:prompts:*` gelöscht werden.
 - **Typen bei `$state`:** `$state<T | null>(null)` schreiben, nicht `let x: T | null = $state(null)`.
   Sonst leitet TypeScript nur `null` ab.
-- **Fotos:** `ChatFlow.svelte` verkleinert Fotos vor dem Senden über `src/lib/shared/image.client.ts` (max. 2048 px, JPEG 85 %).
+- **Fotos und PDFs:**
+  - `ChatFlow.svelte` verkleinert Fotos vor dem Senden über `src/lib/shared/image.client.ts` (max. 2048 px, JPEG 85 %).
+  - PDFs gehen unverändert als `document` an Gemini (`gemini.service.ts`).
+  - Die erlaubten Dateitypen und die Grenze von 20 MB pro Datei stehen in `const.client.ts`.
+  - Gemini hat im Test PDFs bis 100 MB angenommen, die Grenze dient kurzen Upload-Zeiten.
 - **Vorlesen anmelden:** Jede Ansicht meldet ihren Text mit `setReadAloudSource(() => text)` an (`a11y-settings.svelte.ts`).
   Die Funktion gibt eine Abmeldung zurück, die beim Verlassen der Ansicht aufgerufen wird.
 - **Fixierte Overlays und `z-index`:** `layout.css` deckelt jedes `.fixed`-Element auf `z-index: 10`.

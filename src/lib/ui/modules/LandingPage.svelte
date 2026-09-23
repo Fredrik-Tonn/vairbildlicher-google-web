@@ -81,7 +81,7 @@
 	const readAloudText = () =>
 		[
 			'Der Verainfacher hilft beim Verstehen.',
-			'Text fotografieren. Drücken Sie auf Foto erstellen. Ihre Kamera öffnet sich direkt.',
+			'Foto erstellen. Drücken Sie auf Foto erstellen. Ihre Kamera öffnet sich direkt.',
 			'Datei hochladen.',
 			...steps.map((step) => `Schritt ${step.number}: ${step.title}. ${step.lines.join(' ')}`)
 		].join(' ')
@@ -125,10 +125,9 @@
 		<!-- Card: Text fotografieren -->
 		<section class="flex flex-col rounded-2xl border border-line bg-surface p-5 shadow-sm sm:p-6" aria-labelledby="card-photo-title">
 			<div class="flex items-center gap-3">
-				<span class="flex size-12 items-center justify-center rounded-xl bg-brand text-white" aria-hidden="true">
-					<span class="material-symbols-rounded text-[28px]">photo_camera</span>
-				</span>
-				<h2 id="card-photo-title" class="font-display text-xl font-semibold">Text fotografieren</h2>
+				<!-- Plain icon without a tile, so it does not look like a button -->
+				<span class="material-symbols-rounded text-[32px] text-ink" aria-hidden="true">photo_camera</span>
+				<h2 id="card-photo-title" class="font-display text-xl font-semibold">Foto erstellen</h2>
 			</div>
 			<p class="mb-4 mt-4 text-base leading-relaxed text-ink-soft">
 				<!-- Refer to the button by its label, not its colour (WCAG 1.3.3); one sentence per line -->
@@ -149,9 +148,7 @@
 		<section class="flex flex-col rounded-2xl bg-muted p-5 hc-outline sm:p-6" aria-labelledby="card-upload-title">
 			<div class="flex items-start justify-between gap-3">
 				<div class="flex items-center gap-3">
-					<span class="flex size-12 items-center justify-center rounded-xl bg-tint text-ink" aria-hidden="true">
-						<span class="material-symbols-rounded text-[26px]">drive_folder_upload</span>
-					</span>
+					<span class="material-symbols-rounded text-[32px] text-ink" aria-hidden="true">drive_folder_upload</span>
 					<h2 id="card-upload-title" class="max-w-[7ch] font-display text-xl font-semibold leading-snug">Datei hochladen</h2>
 				</div>
 				<span class="rounded-full bg-chip px-2.5 py-1 text-xs font-medium text-ink-soft hc-outline">PDF, JPG</span>
@@ -214,9 +211,7 @@
 		<!-- Help -->
 		<section class="mt-4 rounded-2xl border border-line bg-surface p-5 shadow-sm sm:p-6 md:flex md:items-center md:justify-between md:gap-6" aria-labelledby="help-title">
 			<div class="flex items-start gap-4">
-				<span class="flex size-12 shrink-0 items-center justify-center rounded-xl bg-muted-strong text-brand hc-outline" aria-hidden="true">
-					<span class="material-symbols-rounded text-[26px]">help</span>
-				</span>
+				<span class="material-symbols-rounded shrink-0 text-[32px] text-ink" aria-hidden="true">help</span>
 				<div>
 					<h2 id="help-title" class="font-display text-lg font-bold leading-snug">Brauchen Sie Hilfe bei der Bedienung?</h2>
 					<p class="mt-1 text-sm leading-relaxed text-ink-soft">
