@@ -13,7 +13,11 @@
 	import { onMount, setContext } from 'svelte'
 	import type { Challenge } from '$lib/shared/domain/verainfacher.model'
 	import ChallengeOverlay from '$lib/ui/modules/ChallengeOverlay.svelte'
-	import AIWarningModal from '$lib/ui/modules/AIWarningModal.svelte'
+	import AIWarningPage from '$lib/ui/modules/AIWarningPage.svelte'
+	import LandingPage from '$lib/ui/modules/LandingPage.svelte'
+	import AppHeader from '$lib/ui/modules/AppHeader.svelte'
+	import { setReadAloudSource } from '$lib/ui/a11y-settings.svelte'
+	import { appState } from '$lib/ui/app-state.svelte'
 	import { rewardManager } from '$lib/shared/rewardSystem'
 
 	// Receive data from server
@@ -25,7 +29,7 @@
 	let chatStarted = $state(false)
 	let isDirectSwitch = $state(true) // Default to true for backward compatibility
 	
-	// AI Warning Modal state - always show on mount
+	// AI notice page - shown first on every visit
 	let showAIWarning = $state(true)
 
 	let chatRecord = $state([]) as ChatMessage[]
@@ -172,59 +176,76 @@
 		}
 	})
 	
+	// In the chat, "Vorlesen" in the global header reads the latest answer
+	$effect(() => {
+		if (activeModule === 'chatFlow') return setReadAloudSource(() => appState.completion)
+	})
+
 	const handleWarningClose = () => {
 		showAIWarning = false
 	}
 </script>
 
-<main class="app-container bg-white">
-	{#if activeModule === 'initial' && !chatStarted}
-		<div class="app-content">
-			<div class="flex flex-col h-full">
-				<Infopage></Infopage>
-				<MultiPhotoCapture 
-					onPhotosComplete={startChatWithImages} 
-					onCancel={() => switchModule('initial', true)} 
-				/>
-			</div>
-		</div>
+<!-- div, not main: the global header must stay outside <main> (banner landmark); each view has its own <main> -->
+<div class="app-container bg-white">
+	<AppHeader />
+
+	<!-- Chat header (coins, level, menu) - only during an active chat, below the global header -->
+	{#if chatStarted && activeModule === 'chatFlow' && !showAIWarning}
+		<ChatHeader onNewChat={onReset} {inputDisabled} />
 	{/if}
 
-	{#if activeModule === 'chatFlow'}
-		<!-- Scrollable chat content -->
-		<div class="app-content pt-16">
-			<ChatFlow bind:this={chatFlowElem} user="User" bind:chatRecord={chatRecord} {onDone} bind:inputDisabled={inputDisabled} onChallengeStart={handleChallengeStart} onChallengeComplete={handleChallengeComplete}></ChatFlow>
-		</div>
-	{:else if activeModule === 'multiPhoto'}
-		<div class="app-content">
-			<MultiPhotoCapture 
-				onPhotosComplete={startChatWithImages} 
-				onCancel={() => switchModule('initial', true)}
-				showMenu={true}
-			/>
-		</div>
-	{:else if activeModule === 'takePicture'}
-		<div class="app-content">
-			<SelectImageFiles capturePhoto={true} {onFilesSelected} {isDirectSwitch}></SelectImageFiles>
-		</div>
-	{:else if activeModule === 'uploadFile' && !isDirectSwitch}
-		<!-- For upload button, show both initial screen and hidden file selector -->
-		<div class="app-content">
-			<div class="flex flex-col h-full">
-				<Infopage></Infopage>
-				<InitialImageUpload {images} onStartChat={startChatWithImages} {inputDisabled}></InitialImageUpload>
+	{#if showAIWarning}
+		<!-- AI notice as a full page below the global header (was a modal) -->
+		<main class="app-content">
+			<AIWarningPage onClose={handleWarningClose} />
+		</main>
+	{:else}
+		{#if activeModule === 'initial' && !chatStarted}
+			<div class="app-content">
+				<LandingPage
+					onPhotosComplete={startChatWithImages}
+					onCancel={() => switchModule('initial', true)}
+				/>
 			</div>
-		</div>
-		<div class="fixed top-0 left-0 w-full h-full z-50 opacity-0">
-			<SelectImageFiles capturePhoto={false} {onFilesSelected} {isDirectSwitch}></SelectImageFiles>
-		</div>
-	{:else if activeModule === 'uploadFile' && isDirectSwitch}
-		<!-- Legacy direct switch case -->
-		<div class="app-content">
-			<SelectImageFiles capturePhoto={false} {onFilesSelected} {isDirectSwitch}></SelectImageFiles>
-		</div>
+		{/if}
+
+		{#if activeModule === 'chatFlow'}
+			<!-- Scrollable chat content -->
+			<main class="app-content">
+				<ChatFlow bind:this={chatFlowElem} user="User" bind:chatRecord={chatRecord} {onDone} bind:inputDisabled={inputDisabled} onChallengeStart={handleChallengeStart} onChallengeComplete={handleChallengeComplete}></ChatFlow>
+			</main>
+		{:else if activeModule === 'multiPhoto'}
+			<div class="app-content">
+				<MultiPhotoCapture 
+					onPhotosComplete={startChatWithImages} 
+					onCancel={() => switchModule('initial', true)}
+					showMenu={true}
+				/>
+			</div>
+		{:else if activeModule === 'takePicture'}
+			<div class="app-content">
+				<SelectImageFiles capturePhoto={true} {onFilesSelected} {isDirectSwitch}></SelectImageFiles>
+			</div>
+		{:else if activeModule === 'uploadFile' && !isDirectSwitch}
+			<!-- For upload button, show both initial screen and hidden file selector -->
+			<div class="app-content">
+				<div class="flex flex-col h-full">
+					<Infopage></Infopage>
+					<InitialImageUpload {images} onStartChat={startChatWithImages} {inputDisabled}></InitialImageUpload>
+				</div>
+			</div>
+			<div class="fixed top-0 left-0 w-full h-full z-50 opacity-0">
+				<SelectImageFiles capturePhoto={false} {onFilesSelected} {isDirectSwitch}></SelectImageFiles>
+			</div>
+		{:else if activeModule === 'uploadFile' && isDirectSwitch}
+			<!-- Legacy direct switch case -->
+			<div class="app-content">
+				<SelectImageFiles capturePhoto={false} {onFilesSelected} {isDirectSwitch}></SelectImageFiles>
+			</div>
+		{/if}
 	{/if}
-</main>
+</div>
 
 <!-- Challenge Overlay - Top Level (outside app container) -->
 {#if showChallengeOverlay && currentChallenge}
@@ -234,12 +255,4 @@
 	/>
 {/if}
 
-<!-- Chat Header - Only visible during active chat -->
-{#if chatStarted && activeModule === 'chatFlow'}
-	<ChatHeader onNewChat={onReset} {inputDisabled} />
-{/if}
 
-<!-- AI Warning Modal - Shown on first visit -->
-{#if showAIWarning}
-	<AIWarningModal onClose={handleWarningClose} />
-{/if}

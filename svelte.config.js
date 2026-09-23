@@ -14,10 +14,8 @@ const config = {
 	kit: {
 		adapter: adapter(),
 		csrf: {
+			// Technikprobe: nur lokale Origins. Für eine Demo-Domain hier ergänzen.
 			trustedOrigins: [
-				'https://verainfacher.de',
-				'https://www.verainfacher.de',
-				'https://vair.kopfhandundfuss.net',
 				'http://localhost:3000',
 				'http://localhost:5173'
 			]

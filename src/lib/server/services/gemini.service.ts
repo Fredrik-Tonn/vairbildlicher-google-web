@@ -9,9 +9,13 @@ import type { Challenge } from '$lib/shared/domain/verainfacher.model'
 const MODEL_TEXT = 'gemini-3.8-flash'
 const MODEL_IMAGE = 'gemini-3.1-flash-image'
 
+// Prompts are cached briefly so edits to the .txt files take effect without a restart
+const PROMPT_CACHE_TTL_SECONDS = 300
+const MAX_DIFFICULT_WORDS = 5
+
 let aiClient: GoogleGenAI | null = null
 
-function getAiClient(): GoogleGenAI {
+export function getAiClient(): GoogleGenAI {
 	const apiKey = env.GEMINI_API_KEY
 	if (!apiKey) {
 		throw new Error(
@@ -46,10 +50,10 @@ export const loadSystemPrompts = async () => {
 
 			if (!content) {
 				try {
-					const filePath = join('local-files/system-prompts', `${name}.txt`)
+					const filePath = join(env.PROMPTS_DIR || 'local-files/system-prompts', `${name}.txt`)
 					content = await readFile(filePath, 'utf-8')
 					if (content) {
-						await redis.set(redisKey, content)
+						await redis.set(redisKey, content, { EX: PROMPT_CACHE_TTL_SECONDS })
 					}
 				} catch (e) {
 					console.error(`Failed to load prompt ${name} from file`, e)
@@ -208,11 +212,14 @@ export const extractDifficultWords = async (completion: string): Promise<string[
 		})
 
 		const text = interaction.output_text || ''
+		const lowerCompletion = completion.toLowerCase()
 		return text
 			.split(/[,;\n]+/)
-			.map(w => w.replace(/^[-*•\s]+/, '').trim())
-			.filter(w => w.length > 1 && !w.includes('keine') && !w.includes('Keine'))
-			.slice(0, 6)
+			.map(w => w.replace(/^[-*•\s]+/, '').replace(/[."'„“]+$/, '').trim())
+			.filter(w => w.length > 1 && !/^keine\b/i.test(w))
+			// Grounding: words come back in their base form, so only the stem must appear in the text
+			.filter(w => lowerCompletion.includes(w.toLowerCase().slice(0, 5)))
+			.slice(0, MAX_DIFFICULT_WORDS)
 	} catch (e) {
 		console.error('[Gemini] Error extracting difficult words:', e)
 		return []

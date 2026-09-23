@@ -18,6 +18,7 @@
 	import type { HttpError } from '@sveltejs/kit'
 	import { rewardManager } from '$lib/shared/rewardSystem'
 	import type { Challenge } from '$lib/shared/domain/verainfacher.model'
+	import { downscaleImage } from '$lib/shared/image.client'
 	import ChallengeButton from '$lib/ui/common/ChallengeButton.svelte'
 	import UserChatBar from './UserChatBar.svelte'
 
@@ -60,10 +61,14 @@
 		appState.words = []
 		appState.availableChallenge = null
 
-		await new Promise((resolve) => setTimeout(resolve, waitToSendMessage))
+		// Downscale photos while the short send delay runs
+		const [uploadImages] = await Promise.all([
+			Promise.all(images.map(downscaleImage)),
+			new Promise((resolve) => setTimeout(resolve, waitToSendMessage))
+		])
 		addVAIRChatMessage()
 		try {
-			const vairResponse = await postFetch('/api/chat', { prompt, images, chatId: appState.chatId })
+			const vairResponse = await postFetch('/api/chat', { prompt, images: uploadImages, chatId: appState.chatId })
 			if (vairResponse) {
 				appState.completion = vairResponse.result.completion
 				appState.completion_items = vairResponse.result.completion_items
@@ -116,7 +121,7 @@
 			
 			// Calculate position relative to the container
 			const relativeTop = elementRect.top - containerRect.top
-			const headerHeight = 60 // Header is 60px on both mobile and desktop
+			const headerHeight = 0 // Headers sit above the scroll container, not over it
 			const additionalOffset = 10 // Small additional offset for better visual spacing
 			
 			// Calculate scroll position
@@ -134,7 +139,7 @@
 			
 			const relativeTop = elementRect.top - containerRect.top
 			const isMobile = window.innerWidth < 768
-			const headerHeight = 60
+			const headerHeight = 0
 			const additionalOffset = isMobile ? 20 : 10 // More offset on mobile for center-like behavior
 			
 			const scrollPosition = scrollContainer.scrollTop + relativeTop - headerHeight - additionalOffset

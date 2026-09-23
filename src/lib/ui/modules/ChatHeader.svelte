@@ -33,7 +33,8 @@
 	let { onNewChat, inputDisabled = false }: { onNewChat: () => void, inputDisabled?: boolean } = $props()
 	
 	let totalCoins = $state(0)
-	let levelInfo: LevelSystem | null = $state(null)
+	let levelInfo = $state<LevelSystem | null>(null)
+	let LevelIcon = $derived(levelInfo ? iconComponents[levelInfo.currentLevelIcon] : null)
 	let showLevelUp = $state(false)
 	let showLevelTooltip = $state(false)
 	let headerRef: HTMLElement | undefined = $state()
@@ -141,10 +142,9 @@
 		background: white;
 		border-bottom: 1px solid #e5e7eb;
 		height: 60px;
-		position: fixed;
-		top: 0;
-		left: 0;
-		right: 0;
+		/* In the page flow below the global AppHeader (was position: fixed) */
+		position: relative;
+		flex-shrink: 0;
 		z-index: 40;
 		box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
 	}
@@ -176,11 +176,6 @@
 		gap: 0.5rem;
 		font-weight: 600;
 		color: #374151;
-	}
-	
-	.coins-icon {
-		font-size: 1.5rem;
-		line-height: 1;
 	}
 	
 	.points {
@@ -251,10 +246,6 @@
 		
 		.progress-bar {
 			height: 10px;
-		}
-		
-		.coins-icon {
-			font-size: 1.75rem;
 		}
 		
 		.points {
@@ -411,7 +402,7 @@
 	}
 </style>
 
-<header bind:this={headerRef} class="chat-header" role="banner">
+<header bind:this={headerRef} class="chat-header">
 	<div class="header-content">
 		<!-- Left Section: Coins and Progress -->
 		<div class="header-left">
@@ -458,9 +449,8 @@
 					type="button"
 					onclick={toggleLevelTooltip}
 				>
-					{#if iconComponents[levelInfo.currentLevelIcon]}
-						<svelte:component 
-							this={iconComponents[levelInfo.currentLevelIcon]} 
+					{#if LevelIcon}
+						<LevelIcon
 							size="40"
 							class="level-icon"
 							aria-hidden="true"
@@ -470,9 +460,8 @@
 					<!-- Level Info Tooltip -->
 					<div class="level-tooltip {showLevelTooltip ? 'show' : ''}">
 						<div class="tooltip-header">
-							{#if iconComponents[levelInfo.currentLevelIcon]}
-								<svelte:component 
-									this={iconComponents[levelInfo.currentLevelIcon]} 
+							{#if LevelIcon}
+								<LevelIcon
 									size="32"
 									class="text-gray-700"
 								/>
@@ -530,9 +519,8 @@
 			class="bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-8 py-6 rounded-2xl shadow-2xl text-center"
 		>
 			<div class="mb-2 flex justify-center" aria-hidden="true">
-				{#if iconComponents[levelInfo.currentLevelIcon]}
-					<svelte:component 
-						this={iconComponents[levelInfo.currentLevelIcon]} 
+				{#if LevelIcon}
+					<LevelIcon
 						size="64"
 						class="text-white"
 					/>
