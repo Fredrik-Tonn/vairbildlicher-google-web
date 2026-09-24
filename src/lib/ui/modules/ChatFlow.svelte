@@ -17,7 +17,7 @@
 	import { invalidateAll } from '$app/navigation'
 	import type { HttpError } from '@sveltejs/kit'
 	import { rewardManager } from '$lib/shared/rewardSystem'
-	import type { Challenge } from '$lib/shared/domain/verainfacher.model'
+	import type { Challenge, ImagePlan } from '$lib/shared/domain/verainfacher.model'
 	import { downscaleImage } from '$lib/shared/image.client'
 	import ChallengeButton from '$lib/ui/common/ChallengeButton.svelte'
 	import UserChatBar from './UserChatBar.svelte'
@@ -35,8 +35,8 @@
 		chatRecord = [...chatRecord, { user, timestamp: Date.now(), prompt, images } as UserChatMessage]
 	}
 
-	const addVAIRChatMessage = (timestamp = 0, completion = '', completion_items?: string[]) => {
-		chatRecord = [...chatRecord, { user: chatbotName, timestamp, completion, completion_items } as VAIRChatMessage]
+	const addVAIRChatMessage = (timestamp = 0, completion = '', completion_items?: string[], image_plan?: ImagePlan) => {
+		chatRecord = [...chatRecord, { user: chatbotName, timestamp, completion, completion_items, image_plan } as VAIRChatMessage]
 	}
 
 	const removeLastMessage = () => chatRecord = chatRecord.slice(0, -1)
@@ -74,7 +74,8 @@
 				appState.completion_items = vairResponse.result.completion_items
 				appState.chatId = vairResponse.meta.chatId
 				removeLastMessage()
-				addVAIRChatMessage(Date.now(), appState.completion, appState.completion_items)
+				// With an image plan, ChatBubble starts one image per sentence by itself
+				addVAIRChatMessage(Date.now(), appState.completion, appState.completion_items, vairResponse.result.image_plan)
 
 				// Award points for completion items
 				if (appState.completion_items && appState.completion_items.length > 0) {

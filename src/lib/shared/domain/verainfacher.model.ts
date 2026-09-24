@@ -37,6 +37,35 @@ export type ChatMessage = {
 export interface VAIRChatMessage extends ChatMessage {
 	completion: string
 	completion_items?: string[]
+	image_plan?: ImagePlan
+}
+
+// Text genre, detected by the summary call from the original document
+export type Genre = 'functional' | 'narrative' | 'educational' | 'mixed'
+
+export const GENRE_LABELS: Record<Genre, string> = {
+	functional: 'Brief oder Hinweis',
+	narrative: 'Geschichte',
+	educational: 'Lerntext',
+	mixed: 'Gemischter Text'
+}
+
+export type ImageCharacter = {
+	id: string
+	look: string
+}
+
+// Context condensed from the original text, shared by all images of one answer
+export type ImageContext = {
+	setting: string
+	characters: ImageCharacter[]
+}
+
+// One brief per sentence of completion_items, same order
+export type ImagePlan = {
+	genre: Genre
+	context: ImageContext
+	briefs: string[]
 }
 
 export interface UserChatMessage extends ChatMessage {

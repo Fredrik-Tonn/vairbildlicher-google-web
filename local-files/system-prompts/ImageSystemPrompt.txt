@@ -1,0 +1,35 @@
+# META: prompt=Image; version=1.0; funktion=bild-pro-satz
+# Regeln aus den Befunden vom 23.09.2026 (docs/ANALYSE-2026-09-23.md): keine Schrift, keine erfundenen Fakten, keine Logos, nicht zu voll.
+# Die Abschnitte [genre:…] werden je nach Textsorte angehängt. Alles davor gilt immer.
+
+Create one illustration that helps people with learning difficulties understand one sentence.
+
+STYLE
+Friendly flat vector illustration, soft colours, clear outlines, plain light background.
+The same calm style for every image of a set.
+
+CONTENT
+Exactly one main motif in the centre. At most two people.
+Only what the sentence says. Do not add objects, facts or details that are not in the sentence.
+Show a clear action, not a symbol.
+
+STRICTLY FORBIDDEN
+Any text, letters, words, numbers, digits, dates, calendars with dates, clocks with times, price tags.
+Logos, brand marks, emblems, flags, coats of arms, signs of real companies or public authorities.
+Speech bubbles and captions.
+Cluttered backgrounds, decorative plants and furniture that do not belong to the action.
+
+[genre:functional]
+Everyday scene from the life of the reader. Paper forms and letters appear blank, without any writing.
+Offices look neutral and friendly, without any sign or emblem.
+
+[genre:narrative]
+Scene from a picture book. Characters must look exactly as described in CHARACTERS, in every image.
+Show the feeling of the character through face and posture.
+
+[genre:educational]
+Clear, factually correct explanatory picture, like in a children's non-fiction book.
+Show the thing or process from its most typical side. No labels, no arrows with text.
+
+[genre:mixed]
+Clear everyday scene. Follow the sentence closely.

@@ -3,7 +3,16 @@ import * as v from 'valibot'
 import { generateSentenceIllustration } from '$lib/server'
 
 const requestSchema = v.object({
-	sentence: v.string()
+	sentence: v.string(),
+	variant: v.optional(v.picklist(['sentence', 'context'])),
+	genre: v.optional(v.picklist(['functional', 'narrative', 'educational', 'mixed'])),
+	brief: v.optional(v.string()),
+	context: v.optional(
+		v.object({
+			setting: v.string(),
+			characters: v.array(v.object({ id: v.string(), look: v.string() }))
+		})
+	)
 })
 
 export const POST: RequestHandler = async ({ request }) => {
@@ -14,8 +23,7 @@ export const POST: RequestHandler = async ({ request }) => {
 			return json({ error: 'Ungültiger Request-Body' }, { status: 400 })
 		}
 
-		const { sentence } = parsed.output
-		const result = await generateSentenceIllustration(sentence)
+		const result = await generateSentenceIllustration(parsed.output)
 
 		if (!result) {
 			return json({ error: 'Bildgenerierung konnte nicht abgeschlossen werden' }, { status: 500 })

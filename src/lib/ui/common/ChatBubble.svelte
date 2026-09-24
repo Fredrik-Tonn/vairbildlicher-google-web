@@ -4,6 +4,8 @@
 	import { tick } from 'svelte'
 	import { marked } from 'marked'
 	import { audioCache } from '$lib/shared/audioCache'
+	import { GENRE_LABELS, type ImagePlan } from '$lib/shared/domain/verainfacher.model'
+	import type { SentenceImage } from './ClickableSentences.svelte'
 
 	let { message, isLast, showPlaceholder, onSentenceSelect }: { message: any, isLast: boolean, showPlaceholder: boolean, onSentenceSelect?: (sentence: string) => void } = $props()
 
@@ -27,7 +29,46 @@
 	let hasCompletionItems = $derived(message.user === chatbotName && message.completion_items && message.completion_items.length > 0)
 	let showTTSButton = $derived(message.user === chatbotName && !showPlaceholder && messageText.trim().length > 0 && !cachedAudioBlob)
 	let showAudioPlayer = $derived(message.user === chatbotName && !showPlaceholder && cachedAudioBlob)
-	let showVisualizeButton = $derived(message.user === chatbotName && !showPlaceholder && messageText.trim().length > 0 && !generatedImageUrl)
+	let imagePlan: ImagePlan | undefined = $derived(message.image_plan)
+	let showVisualizeButton = $derived(message.user === chatbotName && !showPlaceholder && messageText.trim().length > 0 && !generatedImageUrl && !imagePlan)
+
+	// One image per sentence, started automatically when the answer has an image plan
+	let sentenceImages: SentenceImage[] = $state([])
+	let imagesStartedFor = 0
+
+	const loadSentenceImage = async (idx: number, sentence: string, plan: ImagePlan) => {
+		const startedAt = performance.now()
+		try {
+			const response = await fetch('/api/visualize', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					sentence,
+					variant: 'context',
+					genre: plan.genre,
+					brief: plan.briefs[idx],
+					context: plan.context
+				})
+			})
+			const result = await response.json()
+			if (!response.ok || !result.imageUrl) throw new Error(result.error || 'Kein Bild')
+			sentenceImages[idx] = { state: 'success', url: result.imageUrl }
+			console.log(`[Verbildlicher] Bild ${idx + 1}: ${Math.round(performance.now() - startedAt)} ms bis im Browser`)
+		} catch (error) {
+			console.error(`[Verbildlicher] Bild ${idx + 1} fehlgeschlagen:`, error)
+			sentenceImages[idx] = { state: 'error' }
+		}
+	}
+
+	$effect(() => {
+		const plan = imagePlan
+		const items: string[] = message.completion_items ?? []
+		if (!plan || showPlaceholder || items.length === 0 || imagesStartedFor === message.timestamp) return
+		imagesStartedFor = message.timestamp
+		sentenceImages = items.map(() => ({ state: 'loading' }))
+		// Parallel, so the wait is one image generation, not three
+		items.forEach((item, idx) => loadSentenceImage(idx, stripHtml(marked.parse(item) as string), plan))
+	})
 
 	// Extract HTML tags from parsed markdown
 	const stripHtml = (html: string): string => {
@@ -156,6 +197,9 @@
 		<div class="flex items-center space-x-2 rtl:space-x-reverse {alignRight}">
 			<span class="text-xs font-semibold text-gray-900">{message.user}</span>
 			<span class="text-xs font-normal text-gray-900">{messageTimeFormatted}</span>
+			{#if imagePlan}
+				<span class="text-xs font-medium text-gray-900 rounded-full border border-gray-400 px-2 py-0.5">{GENRE_LABELS[imagePlan.genre]}</span>
+			{/if}
 			
 			<!-- Google TTS Button -->
 			{#if showTTSButton}
@@ -243,6 +287,7 @@
 					<div class="{message.images?.length > 0 ? 'mt-3' : ''}">
 						<ClickableSentences 
 							completionItems={message.completion_items}
+							images={imagePlan ? sentenceImages : undefined}
 							onSentenceSelect={onSentenceSelect}
 						/>
 					</div>

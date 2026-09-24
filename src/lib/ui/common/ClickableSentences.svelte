@@ -1,3 +1,7 @@
+<script lang="ts" module>
+	export type SentenceImage = { state: 'loading' | 'success' | 'error'; url?: string }
+</script>
+
 <script lang="ts">
 	/**
 	 * ClickableSentences component
@@ -9,9 +13,11 @@
 	
 	let { 
 		completionItems, 
+		images,
 		onSentenceSelect 
 	}: { 
 		completionItems: string[], 
+		images?: SentenceImage[],
 		onSentenceSelect: (sentence: string) => void 
 	} = $props()
 
@@ -31,6 +37,22 @@
 
 <div class="space-y-2">
 	{#each completionItems as sentence, index}
+		{#if images?.[index]}
+			{@const image = images[index]}
+			<!-- The sentence right below says the same, so the image is decorative for screen readers -->
+			<div class="overflow-hidden rounded-lg border border-gray-200 bg-white {index > 0 ? 'mt-4' : ''}">
+				{#if image.state === 'success' && image.url}
+					<img src={image.url} alt="" class="w-full h-auto max-h-72 object-contain" />
+				{:else if image.state === 'loading'}
+					<div class="flex h-40 items-center justify-center gap-2 text-sm text-gray-700 animate-pulse" role="status">
+						<div class="w-4 h-4 border-2 border-gray-500 border-t-transparent rounded-full animate-spin" aria-hidden="true"></div>
+						Bild wird gezeichnet …
+					</div>
+				{:else}
+					<div class="flex h-16 items-center justify-center text-sm text-gray-700">Kein Bild möglich.</div>
+				{/if}
+			</div>
+		{/if}
 		<button
 			class="group block w-full text-left text-sm font-normal text-gray-700 dark:text-white leading-relaxed rounded-lg px-3 py-2 pr-8 border border-gray-200/60 dark:border-gray-600/40 bg-gray-50/30 dark:bg-gray-700/20 transition-all duration-200 hover:bg-gray-100/70 dark:hover:bg-gray-600/40 hover:border-gray-300/80 dark:hover:border-gray-500/60 hover:shadow-sm focus:outline-none focus:bg-gray-100/80 dark:focus:bg-gray-600/50 focus:border-gray-400 dark:focus:border-gray-400 focus:ring-2 focus:ring-gray-300/50 dark:focus:ring-gray-500/50 cursor-pointer relative {index > 0 ? 'mt-2' : ''}"
 			onclick={() => handleSentenceClick(sentence)}

@@ -3,7 +3,8 @@ import { env } from '$env/dynamic/private'
 import { join } from 'node:path'
 import { readFile } from 'node:fs/promises'
 import { getRedisClient } from './redis.adapter'
-import type { Challenge } from '$lib/shared/domain/verainfacher.model'
+import type { Challenge, Genre, ImageContext, ImagePlan } from '$lib/shared/domain/verainfacher.model'
+import { buildImagePrompt, parseSummaryJson, splitSentences, type ImageVariant } from './image-plan'
 
 // Target models per Google Gemini Guidelines
 const MODEL_TEXT = 'gemini-3.8-flash'
@@ -37,6 +38,8 @@ export const loadSystemPrompts = async () => {
 	const promptNames = [
 		'AnswerSystemPrompt_v2',
 		'SummarySystemPrompt_v2',
+		'SummarySystemPrompt_v3',
+		'ImageSystemPrompt',
 		'DifficultWordsSystemPrompt',
 		'FollowUpQuestionsSystemPrompt',
 		'ChallengeSystemPrompt'
@@ -105,8 +108,11 @@ export const getChatCompletion = async ({ prompt, images, chatId }: ChatRequest)
 	let systemInstruction = ''
 	const inputs: Array<{ type: 'text' | 'image' | 'document'; text?: string; data?: string; mime_type?: string }> = []
 
-	if (images && images.length > 0) {
-		systemInstruction = prompts['SummarySystemPrompt_v2']
+	// Document summaries use v3: genre + 3 sentences + image plan as JSON
+	const isDocumentSummary = images && images.length > 0
+
+	if (isDocumentSummary) {
+		systemInstruction = prompts['SummarySystemPrompt_v3']
 
 		// Add photos and PDFs directly into the multimodal input (PDFs as 'document')
 		for (const img of images) {
@@ -138,13 +144,24 @@ export const getChatCompletion = async ({ prompt, images, chatId }: ChatRequest)
 		})
 	}
 
+	const startedAt = Date.now()
 	const interaction = await ai.interactions.create({
 		model: MODEL_TEXT,
 		system_instruction: systemInstruction,
-		input: inputs as any
+		input: inputs as any,
+		...(isDocumentSummary ? { response_format: { type: 'json_object' } as any } : {})
 	})
+	const rawOutput = (interaction.output_text || '').trim()
 
-	const completion = (interaction.output_text || '').trim()
+	// Plain-text fallback keeps the chat working if the JSON is broken
+	const parsed = isDocumentSummary ? parseSummaryJson(rawOutput) : null
+	if (isDocumentSummary && !parsed) {
+		console.warn('[Gemini] Summary JSON not usable, falling back to plain text')
+	}
+	const completion_items = parsed ? parsed.sentences : splitSentences(rawOutput)
+	const completion = parsed ? completion_items.join(' ') : rawOutput
+	const image_plan: ImagePlan | undefined = parsed?.plan
+	console.log(`[Gemini] Text ${Date.now() - startedAt} ms, genre: ${image_plan?.genre ?? '-'}`)
 
 	// Update history
 	history.push({ role: 'user', content: userPrompt || '[Dokument/Bilder hochgeladen]' })
@@ -154,16 +171,11 @@ export const getChatCompletion = async ({ prompt, images, chatId }: ChatRequest)
 	const redis = await getRedisClient()
 	await redis.set(getHistoryKey(chatId), JSON.stringify(trimmedHistory), { EX: 1800 })
 
-	// Split completion into clean sentences
-	const completion_items = completion
-		.split(/(?<=[.!?])\s+/)
-		.map((sentence: string) => sentence.trim())
-		.filter((sentence: string) => sentence.length > 0)
-
 	return {
 		result: {
 			completion,
-			completion_items
+			completion_items,
+			image_plan
 		},
 		meta: {
 			chatId
@@ -263,20 +275,38 @@ Erstelle jetzt das Multiple-Choice Quiz als JSON.`
 	}
 }
 
+export type IllustrationRequest = {
+	sentence: string
+	variant?: ImageVariant
+	genre?: Genre
+	brief?: string
+	context?: ImageContext
+}
+
 /**
- * Generate visual illustration ("Verbildlicher") for a sentence or concept
- * Uses Google Gemini Image Generation / Imagen 3
+ * Generate one illustration ("Verbildlicher") for one sentence.
+ * With variant 'context' the image model also gets the brief and the shared context from the summary call.
  */
-export const generateSentenceIllustration = async (sentence: string): Promise<{ imageUrl: string } | null> => {
+export const generateSentenceIllustration = async ({
+	sentence,
+	variant = 'context',
+	genre,
+	brief,
+	context
+}: IllustrationRequest): Promise<{ imageUrl: string; ms: number } | null> => {
 	try {
 		const ai = getAiClient()
-		const prompt = `A clear, simple, friendly and colorful vector illustration depicting: "${sentence}". Suitable for educational material and easy language comprehension. Clean white background, no text inside the image, welcoming flat art style.`
+		const prompts = await loadSystemPrompts()
+		const prompt = buildImagePrompt({ rules: prompts['ImageSystemPrompt'], sentence, variant, genre, brief, context })
 
+		const startedAt = Date.now()
 		const interaction = await ai.interactions.create({
 			model: MODEL_IMAGE,
 			response_modalities: ['image'],
 			input: prompt
 		})
+		const ms = Date.now() - startedAt
+		console.log(`[Gemini] Image ${ms} ms, genre: ${genre ?? '-'}, variant: ${variant}`)
 
 		for (const step of interaction.steps || []) {
 			if (step.type === 'model_output') {
@@ -284,7 +314,8 @@ export const generateSentenceIllustration = async (sentence: string): Promise<{ 
 					if (item.type === 'image' && item.data) {
 						const mime = item.mime_type || 'image/png'
 						return {
-							imageUrl: `data:${mime};base64,${item.data}`
+							imageUrl: `data:${mime};base64,${item.data}`,
+							ms
 						}
 					}
 				}
