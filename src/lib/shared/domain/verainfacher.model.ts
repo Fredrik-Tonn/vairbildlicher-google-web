@@ -100,14 +100,15 @@ export interface LevelSystem {
 }
 
 // Level Definitions
+// Role names and phosphor icons as in einfachfuturium-web (replaced the animal names Maus … Säbelzahntiger)
 export const LEVEL_DEFINITIONS = [
-	{ name: 'Maus', iconName: 'MouseIcon', minPoints: 0, maxPoints: 199 },
-	{ name: 'Katze', iconName: 'CatIcon', minPoints: 200, maxPoints: 399 },
-	{ name: 'Luchs', iconName: 'LeopardIcon', minPoints: 400, maxPoints: 599 },
-	{ name: 'Puma', iconName: 'PumaIcon', minPoints: 600, maxPoints: 799 },
-	{ name: 'Jaguar', iconName: 'TigerIcon', minPoints: 800, maxPoints: 999 },
-	{ name: 'Panther', iconName: 'BlackPantherIcon', minPoints: 1000, maxPoints: 1199 },
-	{ name: 'Säbelzahntiger', iconName: 'LionIcon', minPoints: 1200, maxPoints: Infinity }
+	{ name: 'Entdecker', iconName: 'BackpackIcon', minPoints: 0, maxPoints: 199 },
+	{ name: 'Sammler', iconName: 'BasketIcon', minPoints: 200, maxPoints: 399 },
+	{ name: 'Chronist', iconName: 'NotepadIcon', minPoints: 400, maxPoints: 599 },
+	{ name: 'Forscher', iconName: 'MagnifyingGlassIcon', minPoints: 600, maxPoints: 799 },
+	{ name: 'Wissenschaftler', iconName: 'AtomIcon', minPoints: 800, maxPoints: 999 },
+	{ name: 'Visionär', iconName: 'LightbulbFilamentIcon', minPoints: 1000, maxPoints: 1199 },
+	{ name: 'Zukunftsforscher', iconName: 'RocketLaunchIcon', minPoints: 1200, maxPoints: Infinity }
 ] as const
 
 // Reward Events - Only actively used events

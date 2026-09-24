@@ -261,7 +261,19 @@ So lassen sich die Prompts ohne neues Deployment anpassen.
 Der Verainfacher enthält ein **Gamification-System** zur Förderung aktiver Nutzung:
 
 - **Coins/Punkte** werden vergeben für: Texte vereinfachen, Fragen stellen, Quiz absolvieren, schwierige Wörter nachlesen.
-- **Level-System** mit verschiedenen Stufen.
+- **Level-System** mit 7 Stufen, wie in einfachfuturium-web (seit 24.09.2026, vorher Tiernamen von „Maus“ bis „Säbelzahntiger“).
+  Die Punktgrenzen sind unverändert (`LEVEL_DEFINITIONS` in `verainfacher.model.ts`).
+  Die Icons kommen aus `phosphor-svelte` und werden einzeln importiert, damit nur diese 7 von über 1000 Icons im Bundle landen.
+
+  | Stufe | Punkte | Icon |
+  |---|---|---|
+  | Entdecker | 0–199 | Rucksack (`BackpackIcon`) |
+  | Sammler | 200–399 | Korb (`BasketIcon`) |
+  | Chronist | 400–599 | Notizblock (`NotepadIcon`) |
+  | Forscher | 600–799 | Lupe (`MagnifyingGlassIcon`) |
+  | Wissenschaftler | 800–999 | Atom (`AtomIcon`) |
+  | Visionär | 1000–1199 | Glühbirne (`LightbulbFilamentIcon`) |
+  | Zukunftsforscher | ab 1200 | Rakete (`RocketLaunchIcon`) |
 - **CoinCollectionOverlay:** Visuelle Animation beim Verdienen von Coins (GSAP-Animation).
 - **ChallengeOverlay:** Multiple-Choice-Quiz zum Textverständnis, mit sofortigem Feedback und Punkte-Vergabe.
 

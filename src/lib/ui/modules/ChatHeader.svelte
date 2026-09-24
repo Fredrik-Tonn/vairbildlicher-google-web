@@ -7,13 +7,16 @@
 	
 	// Import all icons
 	import CoinIcon from '$lib/ui/assets/CoinIcon.svelte'
-	import MouseIcon from '$lib/ui/assets/MouseIcon.svelte'
-	import CatIcon from '$lib/ui/assets/CatIcon.svelte'
-	import LeopardIcon from '$lib/ui/assets/LeopardIcon.svelte'
-	import PumaIcon from '$lib/ui/assets/PumaIcon.svelte'
-	import TigerIcon from '$lib/ui/assets/TigerIcon.svelte'
-	import BlackPantherIcon from '$lib/ui/assets/BlackPantherIcon.svelte'
-	import LionIcon from '$lib/ui/assets/LionIcon.svelte'
+	// Named imports (not a namespace import) so the bundler keeps only these 7 of the >1000 phosphor icons
+	import {
+		BackpackIcon,
+		BasketIcon,
+		NotepadIcon,
+		MagnifyingGlassIcon,
+		AtomIcon,
+		LightbulbFilamentIcon,
+		RocketLaunchIcon
+	} from 'phosphor-svelte'
 	import QuestionMarkCircle from '$lib/ui/assets/QuestionMarkCircle.svelte'
 	import EllipsisVerticalSolid from '$lib/ui/assets/EllipsisVerticalSolid.svelte'
 	import MenuDropdown from '$lib/ui/common/MenuDropdown.svelte'
@@ -21,13 +24,13 @@
 	
 	// Icon mapping
 	const iconComponents: Record<string, any> = {
-		'MouseIcon': MouseIcon,
-		'CatIcon': CatIcon,
-		'LeopardIcon': LeopardIcon,
-		'PumaIcon': PumaIcon,
-		'TigerIcon': TigerIcon,
-		'BlackPantherIcon': BlackPantherIcon,
-		'LionIcon': LionIcon
+		BackpackIcon,
+		BasketIcon,
+		NotepadIcon,
+		MagnifyingGlassIcon,
+		AtomIcon,
+		LightbulbFilamentIcon,
+		RocketLaunchIcon
 	}
 	
 	let { onNewChat, inputDisabled = false }: { onNewChat: () => void, inputDisabled?: boolean } = $props()
