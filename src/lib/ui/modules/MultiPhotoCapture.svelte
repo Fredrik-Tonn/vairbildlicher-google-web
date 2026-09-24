@@ -5,6 +5,8 @@
 	import MenuDropdown from '$lib/ui/common/MenuDropdown.svelte'
 	import QuestionMarkCircle from '$lib/ui/assets/QuestionMarkCircle.svelte'
 	import HelpLink from '$lib/ui/common/HelpLink.svelte'
+	import { acceptedUploadTypes, maxUploadFileSizeMB } from '$lib/shared/const.client'
+	import { isPdfDataUrl } from '$lib/shared/helper'
 
 	let { onPhotosComplete, onCancel, showMenu = false, embedded = false }: {
 		onPhotosComplete: (images: ImageInfo[]) => void,
@@ -140,9 +142,9 @@
 			const file = files[i]
 			const slotIndex = availableSlots[i] // Fixed slot assignment
 			
-			// Check file size (30MB limit)
-			if (file.size > 30 * 1024 * 1024) {
-				alert(`Datei ${file.name} ist zu groß. Bitte nur Dateien unter 30 MB hochladen.`)
+			// Check file size
+			if (file.size > maxUploadFileSizeMB * 1024 * 1024) {
+				alert(`Die Datei ${file.name} ist zu groß. Eine Datei darf höchstens ${maxUploadFileSizeMB} MB groß sein.`)
 				continue
 			}
 
@@ -283,7 +285,7 @@
 	type="file" 
 	bind:this={fileInputElement}
 	onchange={handleFileSelection}
-	accept="image/png, image/jpeg, image/jpg, image/gif, image/webp"
+	accept={acceptedUploadTypes}
 	multiple
 	class="hidden"
 	aria-hidden="true"
@@ -310,12 +312,18 @@
 					class="relative w-16 h-16 rounded-lg border-2 border-green-300 hover:border-green-400 focus:outline-none focus:ring-2 focus:ring-green-500 transition-all"
 					aria-label={`Foto ${index + 1} löschen`}
 				>
-					<!-- Image preview -->
-					<img 
-						src={slot.src} 
-						alt={`Foto ${index + 1}`}
-						class="w-full h-full object-cover rounded-md"
-					/>
+					<!-- Preview: photo, or a PDF symbol for PDF files -->
+					{#if isPdfDataUrl(slot.src)}
+						<span class="flex w-full h-full items-center justify-center rounded-md bg-white text-gray-800" aria-hidden="true">
+							<span class="material-symbols-rounded text-[32px]">picture_as_pdf</span>
+						</span>
+					{:else}
+						<img 
+							src={slot.src} 
+							alt={`Foto ${index + 1}`}
+							class="w-full h-full object-cover rounded-md"
+						/>
+					{/if}
 					
 					<!-- Trash overlay - proper CSS transparency, always visible -->
 					<div class="absolute inset-0 flex items-center justify-center rounded-md z-10" style="background-color: rgba(0, 0, 0, 0.3);">

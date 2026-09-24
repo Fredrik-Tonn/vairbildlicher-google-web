@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { chatbotName, ChatBubbleBottomCenterTextMicro, ClickableSentences, ParagraphPlaceholder, UserMicro, SpeakerSolid, PhotoSolid, AudioPlayer } from '$lib'
+	import { isPdfDataUrl } from '$lib/shared/helper'
 	import { tick } from 'svelte'
 	import { marked } from 'marked'
 	import { audioCache } from '$lib/shared/audioCache'
@@ -228,7 +229,13 @@
 				{#if message.images?.length > 0}
 					<div class="flex -space-x-2">
 						{#each message.images as image, idx}
-							<img class="inline-block size-10 rounded-full ring-2 ring-white" src={image} alt="Hochgeladenes Bild {idx + 1} von {message.images.length}">
+							{#if isPdfDataUrl(image)}
+								<span class="inline-flex size-10 items-center justify-center rounded-full bg-white text-gray-800 ring-2 ring-white" role="img" aria-label="Hochgeladene PDF-Datei {idx + 1} von {message.images.length}">
+									<span class="material-symbols-rounded text-[22px]" aria-hidden="true">picture_as_pdf</span>
+								</span>
+							{:else}
+								<img class="inline-block size-10 rounded-full ring-2 ring-white" src={image} alt="Hochgeladenes Bild {idx + 1} von {message.images.length}">
+							{/if}
 						{/each}
 					</div>
 				{/if}

@@ -25,6 +25,9 @@ export const postFetch = async (path: string, obj: object) => {
 	return await response.json()
 }
 
+/** True for data URLs of PDF files (uploads can be photos or PDFs) */
+export const isPdfDataUrl = (src: string) => src.startsWith('data:application/pdf')
+
 /**
  * Shuffle array elements randomly
  */

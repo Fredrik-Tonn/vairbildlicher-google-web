@@ -1,12 +1,13 @@
-# Verbildlicher (vairbildlicher-google-web)
+# Verainfacher – Technikprobe (vairbildlicher-google-web)
 
 > [!NOTE]
 > Dieses Repository ist eine **Hackathon-Technikprobe** (Google × Aktion Mensch).
 > Es prüft, ob sich im laufenden Chat **Bilder in Echtzeit** als Verständnishilfe erzeugen lassen.
 > Es ist keine neue Version des Verainfachers.
 
-Der Verbildlicher liest ein fotografiertes Dokument mit Google Gemini.
-Er fasst den Text in Leichter Sprache zusammen und erzeugt auf Wunsch ein Bild zur Antwort.
+Der Verainfacher liest ein fotografiertes Dokument oder eine PDF mit Google Gemini.
+Er fasst den Text in Easy Language Plus zusammen und erzeugt auf Wunsch ein Bild zur Antwort.
+Diese Bildfunktion heißt im Code „Verbildlicher“.
 Dazu kommen schwierige Wörter, Folgefragen, ein kurzes Quiz und eine Sprachausgabe.
 
 ## Schnellstart
