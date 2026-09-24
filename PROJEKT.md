@@ -24,12 +24,12 @@
 
 ---
 
-## Stand (23.09.2026)
+## Stand (24.09.2026)
 
 | Branch | Stand |
 |---|---|
 | `main` | `b7b3b1a`: initiales Projekt-Setup, unverändert |
-| `dev` | `afe3fc8` Analyse und Doku, `87fc2cb` Befunde behoben, `361bc34` Startseite nach Mockup, globale Kopfzeile und responsives Layout, `5536fc2` Doku, `a0918c1` PDF-Upload und schlichte Titel-Symbole. Noch nicht in `main` übernommen. |
+| `dev` | `afe3fc8` Analyse und Doku, `87fc2cb` Befunde behoben, `361bc34` Startseite nach Mockup, globale Kopfzeile und responsives Layout, `5536fc2` Doku, `a0918c1` PDF-Upload und schlichte Titel-Symbole, `480dfa6` Doku, `36e1f52` Erfahrungsstufen wie in einfachfuturium-web. Noch nicht in `main` übernommen. |
 
 **Fertig:**
 
@@ -40,13 +40,17 @@
 - Neue Startseite, globale Kopfzeile mit Logo und Barrierefreiheitsmenü.
 - KI-Hinweis als eigene Seite.
 - Volle Responsivität (mobile first).
+- Erfahrungsstufen wie in einfachfuturium-web: Entdecker bis Zukunftsforscher, Icons aus `phosphor-svelte`.
 
 **Offen:**
 
 - Bildfunktion, der Kern der Technikprobe (geplant ab 24.09.2026):
-  - Bild-Prompt mit Bildregeln.
+  - Bild-Prompt mit eigenen Bildregeln aus den Befunden dieses Projekts.
+    Der AInfach-Bildprompt wird hier bewusst nicht verwendet, weil er für ein anderes Problem gedacht ist.
+  - Das Team analysiert dafür zuerst die 5 Systemprompts und vergleicht Lösungswege in einer eigenen Session.
   - Bild automatisch nach der Antwort.
   - Bild pro Satz.
+- Satztrennung: „15. November“ wird in zwei Sätze zerlegt (`completion_items` in `gemini.service.ts`). Das muss vor dem Bild pro Satz behoben sein.
 - Offene Punkte der Korrekturliste in `docs/DESIGN-UMSETZUNG.md`.
 
 ---
